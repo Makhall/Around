@@ -2,13 +2,13 @@
 
 Private, consent-based location sharing for small trusted groups. Android-only, built with Kotlin, Jetpack Compose, Firebase, and MapLibre/OpenStreetMap.
 
-**Status: Phase 0 — Foundations.** Anonymous sign-in, theme, navigation, DI, Firebase wiring, emulator setup, and CI are in place. Circles, live sharing, history, places, and ring arrive in later phases.
+**Status: Phase 0 — Foundations (verified on an Android 16 emulator).** Anonymous sign-in, theme, navigation, DI, Firebase wiring, emulator setup, and CI are in place. Circles, live sharing, history, places, and ring arrive in later phases.
 
 The full product plan lives in [PROJECT_PLAN.md](PROJECT_PLAN.md). Phase 0 verification notes are in [docs/PHASE_0.md](docs/PHASE_0.md).
 
 ## What works now
 
-- Firebase Anonymous Auth on first launch (requires Anonymous provider enabled in the console)
+- Firebase Anonymous Auth on first launch, verified end-to-end on an Android 16 emulator (including cold start and Auth persistence)
 - Material 3 theme with dynamic color, light/dark mode, and static fallback
 - English (`values/`) and Bahasa Indonesia (`values-in/`) strings
 - Type-safe Navigation Compose skeleton
@@ -71,7 +71,9 @@ These are console/billing tasks that cannot be done from the repo:
 4. **Remote Config** — apply `firebase/remoteconfig.template.json` (`sharing_enabled`, `map_style_url`) with `firebase deploy --only remoteconfig`.
 5. **GitHub Actions secret** `GOOGLE_SERVICES_JSON` — paste the contents of `app/google-services.json`. CI fails with a clear message until it is set.
 6. **GitHub Projects board** with milestones M0–M6 (manual, per plan section 9).
-7. **Device/emulator testing** — no AVD or phone was available during scaffolding, so cold-start sign-in still needs a runtime check.
+7. **Firestore/Remote Config deploys** when those features start being used (Phase 1+).
+
+Runtime verification was completed on the local AVD `Around_API_36` (Pixel 10, Android 16 / API 36, Google APIs x86_64). See `docs/phase0-coldstart.png` and `docs/PHASE_0.md`.
 
 ## Secrets
 
@@ -96,7 +98,7 @@ These are console/billing tasks that cannot be done from the repo:
 
 | Phase | Status |
 |---|---|
-| M0 / Phase 0 — Foundations | **Done, pending runtime sign-in check** |
+| M0 / Phase 0 — Foundations | **Done and verified** |
 | M1 / Phase 1 — Identity and Circles | Not started |
 | M2 / Phase 2 — Live sharing | Not started |
 | M3 / Phase 3 — History and last-known | Not started |

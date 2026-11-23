@@ -30,13 +30,24 @@
 | `npm run build` (functions) | Passed |
 | `firebase emulators:exec` (Auth, RTDB, Firestore, Functions) | All started; `health` loaded |
 | Debug APK | `app/build/outputs/apk/debug/app-debug.apk` |
+| Emulator cold start (AVD `Around_API_36`) | Reached "You're all set" with a live anonymous ID |
+| Force-stop + relaunch | Same anonymous ID, Auth persisted |
+| Production Firebase Auth | Admin SDK `listUsers` shows exactly one anonymous user, created at sign-in time |
+| Screenshot evidence | `docs/phase0-coldstart.png` |
+
+## Emulator setup used
+
+- Installed `system-images/android-36/google_apis/x86_64` and created AVD `Around_API_36` with a Pixel 10 device profile.
+- Installed the Android Emulator Hypervisor Driver 2.2 (`extras/google/Android_Emulator_Hypervisor_Driver`) to enable hardware acceleration on this Intel host.
+- Booted headless with `-no-window -gpu swiftshader_indirect`, installed the debug APK, cleared app data, and launched `com.around.app/.MainActivity`.
+- The first attempt hit the error state while the emulator network was still warming up. After the network was ready, a clean launch signed in successfully. This also exercised the Phase 0 error/retry UI.
 
 ## Not verified / pending
 
-- **Runtime cold start and real anonymous sign-in.** No AVD or connected device is available on this machine. Android Studio can create an AVD (API 36/37 x86_64) or a physical phone can be connected.
-- **Anonymous Auth provider.** Must be enabled in the Firebase console once; this is not a repo setting.
 - **CI execution.** The workflow needs the `GOOGLE_SERVICES_JSON` GitHub Actions secret. It has not been pushed/run yet.
 - **Budget alert and GitHub Projects board.** Manual console/GitHub tasks.
+- **Remote Config deployment.** The template exists, but it has not been deployed to the project.
+- **Rules/emulator tests.** The Phase 0 rules are intentionally deny-all; authenticated rule tests begin in Phase 1.
 
 ## Notes and deviations
 
@@ -45,7 +56,8 @@
 - `local.properties` is gitignored and points at the local SDK; its Windows drive colon is escaped (`C\:`) to satisfy lint.
 - The Firebase Admin SDK key was moved outside the repository to `C:\Users\axioo\.around-secrets\`.
 - The Functions emulator warns that local Node 24 differs from the declared Node 22 runtime. CI uses Node 22; deploy targets Node 22.
+- `HomeViewModel` logs the Auth exception tag `HomeViewModel` while keeping the user-facing error localized.
 
 ## Definition of done
 
-Cold start → anonymous sign-in → home placeholder: **implemented**, runtime check pending a device/emulator. CI passes locally (lint, unit tests, assemble); GitHub Actions pending the repository secret.
+Cold start → anonymous sign-in → home placeholder: **done and verified on the emulator**. Lint, unit tests, and assemble pass locally. GitHub Actions still needs the repository secret before the first CI run can pass.

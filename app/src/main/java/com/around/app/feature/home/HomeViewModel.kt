@@ -1,5 +1,6 @@
 package com.around.app.feature.home
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.around.app.data.auth.AuthRepository
@@ -31,8 +32,15 @@ class HomeViewModel @Inject constructor(
             _uiState.value = HomeUiState.Loading
             _uiState.value = authRepository.signInAnonymously().fold(
                 onSuccess = { uid -> HomeUiState.Ready(uid) },
-                onFailure = { HomeUiState.Error },
+                onFailure = { throwable ->
+                    Log.w(TAG, "Anonymous sign-in failed", throwable)
+                    HomeUiState.Error
+                },
             )
         }
+    }
+
+    private companion object {
+        const val TAG = "HomeViewModel"
     }
 }
