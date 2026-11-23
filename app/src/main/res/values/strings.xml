@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">Around</string>
+
+    <string name="home_title">Around</string>
+    <string name="home_phase_label">Phase 0 · Foundations</string>
+    <string name="home_loading">Signing you in…</string>
+    <string name="home_signed_in_title">You\'re all set</string>
+    <string name="home_signed_in_body">Anonymous sign-in works. Circles and live sharing arrive in the next phases.</string>
+    <string name="home_uid_label">Anonymous ID</string>
+    <string name="home_sharing_title">Live sharing</string>
+    <string name="home_sharing_off">Off</string>
+    <string name="home_sharing_body">You\'ll turn this on in Phase 2.</string>
+    <string name="home_circle_title">Your Circle</string>
+    <string name="home_circle_value">Phase 1</string>
+    <string name="home_circle_body">Create or join a Circle in Phase 1.</string>
+    <string name="home_error_title">Couldn\'t sign in</string>
+    <string name="home_error_body">Check your connection and try again. If this keeps happening, enable Anonymous Auth in the Firebase console.</string>
+    <string name="home_retry">Retry</string>
+    <string name="home_status_ready">Connected</string>
+</resources>

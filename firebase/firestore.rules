@@ -1,0 +1,11 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Phase 0 placeholder: deny everything.
+    // Phase 1 replaces this with the member-scoped rules from PROJECT_PLAN.md section 7.4.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

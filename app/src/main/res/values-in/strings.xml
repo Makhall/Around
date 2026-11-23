@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">Around</string>
+
+    <string name="home_title">Around</string>
+    <string name="home_phase_label">Fase 0 · Fondasi</string>
+    <string name="home_loading">Sedang masuk…</string>
+    <string name="home_signed_in_title">Semua siap</string>
+    <string name="home_signed_in_body">Masuk anonim berhasil. Circle dan berbagi lokasi hadir di fase berikutnya.</string>
+    <string name="home_uid_label">ID anonim</string>
+    <string name="home_sharing_title">Berbagi lokasi</string>
+    <string name="home_sharing_off">Nonaktif</string>
+    <string name="home_sharing_body">Kamu akan mengaktifkannya di Fase 2.</string>
+    <string name="home_circle_title">Circle-mu</string>
+    <string name="home_circle_value">Fase 1</string>
+    <string name="home_circle_body">Buat atau gabung Circle di Fase 1.</string>
+    <string name="home_error_title">Gagal masuk</string>
+    <string name="home_error_body">Periksa koneksi lalu coba lagi. Jika masih gagal, aktifkan Anonymous Auth di konsol Firebase.</string>
+    <string name="home_retry">Coba lagi</string>
+    <string name="home_status_ready">Terhubung</string>
+</resources>
