@@ -1,20 +1,102 @@
 <resources>
     <string name="app_name">Around</string>
 
-    <string name="home_title">Around</string>
-    <string name="home_phase_label">Fase 0 · Fondasi</string>
-    <string name="home_loading">Sedang masuk…</string>
-    <string name="home_signed_in_title">Semua siap</string>
-    <string name="home_signed_in_body">Masuk anonim berhasil. Circle dan berbagi lokasi hadir di fase berikutnya.</string>
-    <string name="home_uid_label">ID anonim</string>
-    <string name="home_sharing_title">Berbagi lokasi</string>
-    <string name="home_sharing_off">Nonaktif</string>
-    <string name="home_sharing_body">Kamu akan mengaktifkannya di Fase 2.</string>
-    <string name="home_circle_title">Circle-mu</string>
-    <string name="home_circle_value">Fase 1</string>
-    <string name="home_circle_body">Buat atau gabung Circle di Fase 1.</string>
-    <string name="home_error_title">Gagal masuk</string>
-    <string name="home_error_body">Periksa koneksi lalu coba lagi. Jika masih gagal, aktifkan Anonymous Auth di konsol Firebase.</string>
-    <string name="home_retry">Coba lagi</string>
-    <string name="home_status_ready">Terhubung</string>
+    <string name="session_loading">Sedang masuk…</string>
+    <string name="session_error_title">Gagal masuk</string>
+    <string name="session_error_body">Periksa koneksi lalu coba lagi.</string>
+    <string name="session_retry">Coba lagi</string>
+
+    <string name="profile_setup_title">Buat profilmu</string>
+    <string name="profile_edit_title">Edit profil</string>
+    <string name="profile_subtitle">Beginilah teman-teman melihatmu di Circle.</string>
+    <string name="profile_name_label">Nama tampilan</string>
+    <string name="profile_name_placeholder">Namamu</string>
+    <string name="profile_avatar_label">Avatar</string>
+    <string name="profile_save">Simpan</string>
+    <string name="profile_saving">Menyimpan…</string>
+    <string name="profile_error_name">Masukkan nama 1–30 karakter.</string>
+    <string name="profile_error_load">Gagal memuat profilmu. Coba lagi.</string>
+    <string name="profile_error_save">Gagal menyimpan profil. Coba lagi.</string>
+
+    <string name="circles_title">Around</string>
+    <string name="circles_empty_title">Belum ada Circle</string>
+    <string name="circles_empty_body">Buat Circle untuk keluarga atau temanmu, atau gabung dengan kode undangan.</string>
+    <string name="circles_create">Buat Circle</string>
+    <string name="circles_join">Gabung dengan kode</string>
+    <string name="circles_owner">Pemilik</string>
+    <string name="circles_member">Anggota</string>
+    <string name="circles_loading">Memuat Circle-mu…</string>
+    <string name="circles_error">Gagal memuat Circle-mu.</string>
+    <string name="circles_retry">Coba lagi</string>
+    <string name="edit_profile_content_description">Edit profil</string>
+
+    <string name="create_circle_title">Buat Circle</string>
+    <string name="create_circle_name_label">Nama Circle</string>
+    <string name="create_circle_name_placeholder">Keluarga, Sahabat, …</string>
+    <string name="create_circle_action">Buat</string>
+    <string name="create_circle_creating">Membuat…</string>
+    <string name="create_circle_success_title">Circle dibuat</string>
+    <string name="create_circle_success_body">Bagikan kode ini ke orang yang ingin kamu undang.</string>
+    <string name="create_circle_open">Buka Circle</string>
+
+    <string name="join_circle_title">Gabung Circle</string>
+    <string name="join_circle_code_label">Kode undangan</string>
+    <string name="join_circle_code_placeholder">8 karakter</string>
+    <string name="join_circle_action">Gabung</string>
+    <string name="join_circle_joining">Bergabung…</string>
+
+    <string name="invite_code_title">Kode undangan</string>
+    <string name="invite_code_expiry">Berlaku 24 jam. Membuat kode baru membatalkan kode ini.</string>
+    <string name="invite_code_copy">Salin</string>
+    <string name="invite_code_share">Bagikan</string>
+    <string name="invite_code_copied">Kode undangan disalin</string>
+
+    <string name="circle_detail_members_count">Anggota (%1$d)</string>
+    <string name="circle_detail_invite_title">Undang orang</string>
+    <string name="circle_detail_invite_body">Buat kode undangan dan bagikan ke orang yang ingin kamu masukkan ke Circle ini.</string>
+    <string name="circle_detail_generate_code">Buat kode undangan</string>
+    <string name="circle_detail_new_code">Buat kode baru</string>
+    <string name="circle_detail_invite_owner_only">Hanya pemilik yang bisa membuat kode undangan.</string>
+    <string name="circle_detail_owner_note">Kamu pemilik Circle ini. Pemilik belum bisa keluar di versi ini.</string>
+    <string name="circle_detail_leave">Keluar dari Circle</string>
+    <string name="circle_detail_leaving">Keluar…</string>
+    <string name="circle_detail_you">Kamu</string>
+    <string name="circle_detail_remove_title">Keluarkan %1$s?</string>
+    <string name="circle_detail_remove_body">Akses mereka ke Circle ini dan data lokasinya akan dicabut segera.</string>
+    <string name="circle_detail_leave_title">Keluar dari %1$s?</string>
+    <string name="circle_detail_leave_body">Kamu akan kehilangan akses ke Circle ini dan data lokasinya.</string>
+    <string name="circle_detail_cancel">Batal</string>
+    <string name="circle_detail_confirm_remove">Keluarkan</string>
+    <string name="circle_detail_confirm_leave">Keluar</string>
+    <string name="circle_detail_loading">Memuat Circle…</string>
+    <string name="circle_detail_gone">Kamu tidak lagi berada di Circle ini.</string>
+    <string name="remove_member_content_description">Keluarkan %1$s</string>
+
+    <string name="share_invite_text">Gabung ke Circle Around \"%1$s\" dengan kode %2$s.</string>
+    <string name="share_invite_chooser">Bagikan kode undangan</string>
+
+    <string name="error_invalid_name">Masukkan nama Circle 1–40 karakter.</string>
+    <string name="error_code_required">Masukkan kode undangan 8 karakter.</string>
+    <string name="error_too_many_circles">Kamu bisa berada di maksimal 3 Circle.</string>
+    <string name="error_profile_missing">Selesaikan profilmu dulu.</string>
+    <string name="error_code_not_found">Kode undangan tidak ditemukan. Periksa 8 karakter lalu coba lagi.</string>
+    <string name="error_code_expired">Kode undangan sudah kedaluwarsa. Minta kode baru.</string>
+    <string name="error_code_revoked">Kode undangan sudah diganti. Minta kode terbaru.</string>
+    <string name="error_code_exhausted">Kode undangan sudah mencapai batasnya. Minta kode baru.</string>
+    <string name="error_circle_full">Circle ini penuh (20 anggota).</string>
+    <string name="error_already_member">Kamu sudah berada di Circle ini.</string>
+    <string name="error_rate_limited">Terlalu banyak percobaan. Tunggu beberapa menit lalu coba lagi.</string>
+    <string name="error_owner_cannot_leave">Pemilik belum bisa keluar. Keluarkan anggota lain.</string>
+    <string name="error_not_owner">Hanya pemilik yang bisa melakukan itu.</string>
+    <string name="error_member_not_found">Orang itu sudah tidak ada di Circle.</string>
+    <string name="error_circle_not_found">Circle ini sudah tidak ada.</string>
+    <string name="error_unauthenticated">Silakan masuk lagi.</string>
+    <string name="error_network">Tidak bisa menghubungi Around. Periksa koneksi lalu coba lagi.</string>
+    <string name="error_unknown">Terjadi kesalahan. Coba lagi.</string>
+
+    <string name="action_back">Kembali</string>
+
+    <plurals name="circles_member_count">
+        <item quantity="other">%1$d anggota</item>
+    </plurals>
 </resources>

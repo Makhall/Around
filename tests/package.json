@@ -1,0 +1,14 @@
+{
+  "name": "around-tests",
+  "private": true,
+  "scripts": {
+    "test": "node --test --test-concurrency=1",
+    "test:rules": "node --test --test-concurrency=1 rules",
+    "test:functions": "node --test --test-concurrency=1 functions"
+  },
+  "dependencies": {
+    "@firebase/rules-unit-testing": "^6.0.0",
+    "firebase": "^13.4.0",
+    "firebase-admin": "^14.5.1"
+  }
+}

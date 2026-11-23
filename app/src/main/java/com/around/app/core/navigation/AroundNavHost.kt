@@ -5,7 +5,12 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.around.app.feature.home.HomeScreen
+import com.around.app.feature.circles.CircleDetailScreen
+import com.around.app.feature.circles.CirclesScreen
+import com.around.app.feature.circles.CreateCircleScreen
+import com.around.app.feature.circles.JoinCircleScreen
+import com.around.app.feature.profile.ProfileScreen
+import com.around.app.feature.session.SessionScreen
 
 @Composable
 fun AroundNavHost(
@@ -13,10 +18,82 @@ fun AroundNavHost(
 ) {
     NavHost(
         navController = navController,
-        startDestination = HomeRoute,
+        startDestination = SessionRoute,
     ) {
-        composable<HomeRoute> {
-            HomeScreen()
+        composable<SessionRoute> {
+            SessionScreen(
+                onReady = {
+                    navController.navigate(CirclesRoute) {
+                        popUpTo<SessionRoute> { inclusive = true }
+                    }
+                },
+                onNeedsProfile = {
+                    navController.navigate(ProfileSetupRoute) {
+                        popUpTo<SessionRoute> { inclusive = true }
+                    }
+                },
+            )
+        }
+
+        composable<ProfileSetupRoute> {
+            ProfileScreen(
+                isOnboarding = true,
+                onSaved = {
+                    navController.navigate(CirclesRoute) {
+                        popUpTo<ProfileSetupRoute> { inclusive = true }
+                    }
+                },
+            )
+        }
+
+        composable<ProfileEditRoute> {
+            ProfileScreen(
+                isOnboarding = false,
+                onBack = { navController.popBackStack() },
+                onSaved = { navController.popBackStack() },
+            )
+        }
+
+        composable<CirclesRoute> {
+            CirclesScreen(
+                onCreateCircle = { navController.navigate(CreateCircleRoute) },
+                onJoinCircle = { navController.navigate(JoinCircleRoute) },
+                onOpenCircle = { circle ->
+                    navController.navigate(CircleDetailRoute(circle.id))
+                },
+                onEditProfile = { navController.navigate(ProfileEditRoute) },
+            )
+        }
+
+        composable<CreateCircleRoute> {
+            CreateCircleScreen(
+                onBack = { navController.popBackStack() },
+                onOpenCircle = { circleId ->
+                    navController.navigate(CircleDetailRoute(circleId)) {
+                        popUpTo<CirclesRoute>()
+                    }
+                },
+            )
+        }
+
+        composable<JoinCircleRoute> {
+            JoinCircleScreen(
+                onBack = { navController.popBackStack() },
+                onJoined = { circleId ->
+                    navController.navigate(CircleDetailRoute(circleId)) {
+                        popUpTo<CirclesRoute>()
+                    }
+                },
+            )
+        }
+
+        composable<CircleDetailRoute> {
+            CircleDetailScreen(
+                onBack = { navController.popBackStack() },
+                onLeft = {
+                    navController.popBackStack(CirclesRoute, inclusive = false)
+                },
+            )
         }
     }
 }

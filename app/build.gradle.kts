@@ -7,6 +7,10 @@ plugins {
     alias(libs.plugins.google.services)
 }
 
+val useFirebaseEmulators = providers.gradleProperty("useFirebaseEmulators")
+    .getOrElse("false")
+    .toBoolean()
+
 android {
     namespace = "com.around.app"
     compileSdk {
@@ -30,6 +34,12 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+
+        buildConfigField(
+            "boolean",
+            "USE_FIREBASE_EMULATORS",
+            useFirebaseEmulators.toString(),
+        )
     }
 
     buildTypes {
@@ -80,6 +90,7 @@ dependencies {
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
+    implementation(libs.androidx.compose.material.icons.extended)
 
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
@@ -88,6 +99,7 @@ dependencies {
     implementation(libs.firebase.auth)
     implementation(libs.firebase.database)
     implementation(libs.firebase.firestore)
+    implementation(libs.firebase.functions)
 
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.kotlinx.coroutines.play.services)

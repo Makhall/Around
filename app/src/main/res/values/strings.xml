@@ -1,20 +1,103 @@
 <resources>
     <string name="app_name">Around</string>
 
-    <string name="home_title">Around</string>
-    <string name="home_phase_label">Phase 0 · Foundations</string>
-    <string name="home_loading">Signing you in…</string>
-    <string name="home_signed_in_title">You\'re all set</string>
-    <string name="home_signed_in_body">Anonymous sign-in works. Circles and live sharing arrive in the next phases.</string>
-    <string name="home_uid_label">Anonymous ID</string>
-    <string name="home_sharing_title">Live sharing</string>
-    <string name="home_sharing_off">Off</string>
-    <string name="home_sharing_body">You\'ll turn this on in Phase 2.</string>
-    <string name="home_circle_title">Your Circle</string>
-    <string name="home_circle_value">Phase 1</string>
-    <string name="home_circle_body">Create or join a Circle in Phase 1.</string>
-    <string name="home_error_title">Couldn\'t sign in</string>
-    <string name="home_error_body">Check your connection and try again. If this keeps happening, enable Anonymous Auth in the Firebase console.</string>
-    <string name="home_retry">Retry</string>
-    <string name="home_status_ready">Connected</string>
+    <string name="session_loading">Signing you in…</string>
+    <string name="session_error_title">Couldn\'t sign in</string>
+    <string name="session_error_body">Check your connection and try again.</string>
+    <string name="session_retry">Retry</string>
+
+    <string name="profile_setup_title">Create your profile</string>
+    <string name="profile_edit_title">Edit profile</string>
+    <string name="profile_subtitle">This is how friends see you in a Circle.</string>
+    <string name="profile_name_label">Display name</string>
+    <string name="profile_name_placeholder">Your name</string>
+    <string name="profile_avatar_label">Avatar</string>
+    <string name="profile_save">Save</string>
+    <string name="profile_saving">Saving…</string>
+    <string name="profile_error_name">Enter a name between 1 and 30 characters.</string>
+    <string name="profile_error_load">Couldn\'t load your profile. Try again.</string>
+    <string name="profile_error_save">Couldn\'t save your profile. Try again.</string>
+
+    <string name="circles_title">Around</string>
+    <string name="circles_empty_title">No Circles yet</string>
+    <string name="circles_empty_body">Create a Circle for your family or friends, or join one with an invite code.</string>
+    <string name="circles_create">Create a Circle</string>
+    <string name="circles_join">Join with code</string>
+    <string name="circles_owner">Owner</string>
+    <string name="circles_member">Member</string>
+    <string name="circles_loading">Loading your Circles…</string>
+    <string name="circles_error">Couldn\'t load your Circles.</string>
+    <string name="circles_retry">Retry</string>
+    <string name="edit_profile_content_description">Edit profile</string>
+
+    <string name="create_circle_title">Create a Circle</string>
+    <string name="create_circle_name_label">Circle name</string>
+    <string name="create_circle_name_placeholder">Family, Besties, …</string>
+    <string name="create_circle_action">Create</string>
+    <string name="create_circle_creating">Creating…</string>
+    <string name="create_circle_success_title">Circle created</string>
+    <string name="create_circle_success_body">Share this code with the people you want to invite.</string>
+    <string name="create_circle_open">Open Circle</string>
+
+    <string name="join_circle_title">Join a Circle</string>
+    <string name="join_circle_code_label">Invite code</string>
+    <string name="join_circle_code_placeholder">8 characters</string>
+    <string name="join_circle_action">Join</string>
+    <string name="join_circle_joining">Joining…</string>
+
+    <string name="invite_code_title">Invite code</string>
+    <string name="invite_code_expiry">Valid for 24 hours. Creating a new code cancels this one.</string>
+    <string name="invite_code_copy">Copy</string>
+    <string name="invite_code_share">Share</string>
+    <string name="invite_code_copied">Invite code copied</string>
+
+    <string name="circle_detail_members_count">Members (%1$d)</string>
+    <string name="circle_detail_invite_title">Invite people</string>
+    <string name="circle_detail_invite_body">Create an invite code and share it with the people you want in this Circle.</string>
+    <string name="circle_detail_generate_code">Create invite code</string>
+    <string name="circle_detail_new_code">Create a new code</string>
+    <string name="circle_detail_invite_owner_only">Only the owner can create invite codes.</string>
+    <string name="circle_detail_owner_note">You own this Circle. Owners can\'t leave in this version.</string>
+    <string name="circle_detail_leave">Leave Circle</string>
+    <string name="circle_detail_leaving">Leaving…</string>
+    <string name="circle_detail_you">You</string>
+    <string name="circle_detail_remove_title">Remove %1$s?</string>
+    <string name="circle_detail_remove_body">They\'ll lose access to this Circle and its location data immediately.</string>
+    <string name="circle_detail_leave_title">Leave %1$s?</string>
+    <string name="circle_detail_leave_body">You\'ll lose access to this Circle and its location data immediately.</string>
+    <string name="circle_detail_cancel">Cancel</string>
+    <string name="circle_detail_confirm_remove">Remove</string>
+    <string name="circle_detail_confirm_leave">Leave</string>
+    <string name="circle_detail_loading">Loading Circle…</string>
+    <string name="circle_detail_gone">You\'re no longer in this Circle.</string>
+    <string name="remove_member_content_description">Remove %1$s</string>
+
+    <string name="share_invite_text">Join my Around Circle \"%1$s\" with code %2$s.</string>
+    <string name="share_invite_chooser">Share invite code</string>
+
+    <string name="error_invalid_name">Enter a Circle name between 1 and 40 characters.</string>
+    <string name="error_code_required">Enter the 8-character invite code.</string>
+    <string name="error_too_many_circles">You can be in at most 3 Circles.</string>
+    <string name="error_profile_missing">Finish your profile first.</string>
+    <string name="error_code_not_found">That invite code doesn\'t exist. Check the 8 characters and try again.</string>
+    <string name="error_code_expired">That invite code has expired. Ask for a new one.</string>
+    <string name="error_code_revoked">That invite code was replaced. Ask for the latest one.</string>
+    <string name="error_code_exhausted">That invite code has reached its limit. Ask for a new one.</string>
+    <string name="error_circle_full">This Circle is full (20 members).</string>
+    <string name="error_already_member">You\'re already in this Circle.</string>
+    <string name="error_rate_limited">Too many attempts. Wait a few minutes and try again.</string>
+    <string name="error_owner_cannot_leave">Owners can\'t leave yet. Remove members instead.</string>
+    <string name="error_not_owner">Only the owner can do that.</string>
+    <string name="error_member_not_found">That person is no longer in the Circle.</string>
+    <string name="error_circle_not_found">This Circle no longer exists.</string>
+    <string name="error_unauthenticated">Please sign in again.</string>
+    <string name="error_network">Can\'t reach Around right now. Check your connection and try again.</string>
+    <string name="error_unknown">Something went wrong. Try again.</string>
+
+    <string name="action_back">Back</string>
+
+    <plurals name="circles_member_count">
+        <item quantity="one">%1$d member</item>
+        <item quantity="other">%1$d members</item>
+    </plurals>
 </resources>

@@ -2,29 +2,31 @@
 
 Private, consent-based location sharing for small trusted groups. Android-only, built with Kotlin, Jetpack Compose, Firebase, and MapLibre/OpenStreetMap.
 
-**Status: Phase 0 — Foundations (verified on an Android 16 emulator).** Anonymous sign-in, theme, navigation, DI, Firebase wiring, emulator setup, and CI are in place. Circles, live sharing, history, places, and ring arrive in later phases.
+**Status: Phase 1 — Identity and Circles (verified on an Android 16 emulator).** Anonymous sign-in, profiles, Circles, invite codes, member lists, and access revocation are in place. Live sharing, history, places, and ring arrive in later phases.
 
-The full product plan lives in [PROJECT_PLAN.md](PROJECT_PLAN.md). Phase 0 verification notes are in [docs/PHASE_0.md](docs/PHASE_0.md).
+The full product plan lives in [PROJECT_PLAN.md](PROJECT_PLAN.md). Verification notes: [Phase 0](docs/PHASE_0.md) and [Phase 1](docs/PHASE_1.md).
 
 ## What works now
 
-- Firebase Anonymous Auth on first launch, verified end-to-end on an Android 16 emulator (including cold start and Auth persistence)
-- Material 3 theme with dynamic color, light/dark mode, and static fallback
-- English (`values/`) and Bahasa Indonesia (`values-in/`) strings
-- Type-safe Navigation Compose skeleton
-- Hilt DI with Firebase Auth, Realtime Database, and Firestore providers
-- Phase 0 home screen with loading, ready, and error states
-- Firebase Emulator Suite config for Auth, RTDB, Firestore, and Functions
-- Cloud Functions v2 TypeScript skeleton with `maxInstances: 3` and an `asia-southeast1` health function
-- CI: Android lint, unit tests, debug APK, and Functions build
-- Secrets kept out of git; `app/google-services.json.example` documents the expected shape
+- Firebase Anonymous Auth on first launch, including cold start and Auth persistence
+- Profile setup/edit with display name and emoji or color avatar
+- Create a Circle (max 3 per user), with an 8-character invite code valid for 24 hours
+- Join a Circle by code, with localized errors for expired, revoked, full, rate-limited, and unknown codes
+- Member list with owner/member roles and a real-time update when someone joins
+- Owner can rotate the invite code and remove members
+- Members can leave; leaving or removal revokes Firestore and RTDB access
+- Material 3 theme with dynamic color, light/dark, and English + Bahasa Indonesia
+- Hilt DI, type-safe Navigation Compose, Firestore/RTDB-backed repositories
+- Functions and security-rule test suites run against the Firebase Emulator Suite
+- CI: Android lint, unit tests, debug APK, Functions build, rules and callable tests
 
 ## Requirements
 
 - Android Studio with its bundled JDK (25), or any JDK 17+
 - Android SDK platform **37.2** and build-tools 36+ (compileSdk 37.2, targetSdk 37, minSdk 26)
 - Node 22+ and Firebase CLI 15+ for Functions and emulators
-- `app/google-services.json` for project `around-847b3` (already present locally, gitignored)
+- `app/google-services.json` for project `around-847b3` (present locally, gitignored)
+- A Blaze plan to deploy Cloud Functions; local development runs entirely on emulators
 
 ## Build and test
 
@@ -39,68 +41,84 @@ $env:JAVA_HOME = "C:\Program Files\Android\Android Studio\jbr"
 
 The debug APK is written to `app/build/outputs/apk/debug/app-debug.apk`.
 
-You can also open the project root in Android Studio. `local.properties` already points at `C:\Users\axioo\AppData\Local\Android\Sdk`.
-
-### Functions
+### Run the app against the Firebase Emulator Suite
 
 ```powershell
-cd functions
-npm install
-npm run build
-```
-
-### Firebase Emulator Suite
-
-```powershell
+# Terminal 1
 npm --prefix functions install
 npm --prefix functions run build
-firebase emulators:start
+firebase emulators:start --only auth,firestore,database,functions
+
+# Terminal 2
+.\gradlew.bat :app:assembleDebug -PuseFirebaseEmulators=true
+adb install -r app\build\outputs\apk\debug\app-debug.apk
+adb shell am start -n com.around.app/.MainActivity
 ```
 
-Emulator UI: http://localhost:4000. Ports: Auth 9099, Firestore 8080, RTDB 9000, Functions 5001. The `health` function should appear at `http://127.0.0.1:5001/around-847b3/asia-southeast1/health`.
+The flag makes the app connect Auth (9099), Firestore (8080), RTDB (9000), and Functions (5001) through `10.0.2.2`. Emulator UI: http://localhost:4000.
 
-The placeholder rules in `firebase/` deny all reads and writes. Phase 1 replaces them with the member-scoped rules from the plan.
+### Backend tests
 
-## Firebase setup still to do manually
+```powershell
+npm --prefix functions run build
+firebase emulators:exec --only auth,firestore,database,functions --project around-847b3 "npm --prefix tests test"
+```
 
-These are console/billing tasks that cannot be done from the repo:
+This runs Firestore rules, RTDB rules, and callable-function integration tests (24 tests).
 
-1. **Authentication → Sign-in method → Anonymous → Enable.** Without this, the app shows the Phase 0 error state.
-2. **Firestore** — confirm the database exists and note its region. Realtime Database is already in `asia-southeast1`.
-3. **Blaze plan + budget alert** in Google Cloud Billing. A budget alert only notifies; it does not cap spend.
-4. **Remote Config** — apply `firebase/remoteconfig.template.json` (`sharing_enabled`, `map_style_url`) with `firebase deploy --only remoteconfig`.
-5. **GitHub Actions secret** `GOOGLE_SERVICES_JSON` — paste the contents of `app/google-services.json`. CI fails with a clear message until it is set.
+## Deploying to production
+
+**Production Phase 1 is not deployed yet.** `around-847b3` is still on the Spark plan, so Cloud Functions cannot be enabled. Once Blaze is active and a budget alert exists:
+
+```powershell
+firebase deploy --only functions
+firebase deploy --only firestore:rules
+firebase deploy --only database
+firebase deploy --only remoteconfig
+```
+
+Then build the APK **without** `-PuseFirebaseEmulators=true`. See [docs/PHASE_1.md](docs/PHASE_1.md) for details and the deploy checklist.
+
+### Remaining manual setup
+
+1. **Blaze plan + budget alert** in Google Cloud Billing (required for Functions). A budget alert notifies but does not cap spend.
+2. **Firestore database** — confirm it exists and record its region. Realtime Database is in `asia-southeast1`.
+3. **Anonymous Auth** — enabled and verified in Phase 0.
+4. **Remote Config** — deploy `firebase/remoteconfig.template.json`.
+5. **GitHub Actions** — CI compiles without the private config using `app/google-services.json.example`; set the `GOOGLE_SERVICES_JSON` secret for a real build.
 6. **GitHub Projects board** with milestones M0–M6 (manual, per plan section 9).
-7. **Firestore/Remote Config deploys** when those features start being used (Phase 1+).
 
-Runtime verification was completed on the local AVD `Around_API_36` (Pixel 10, Android 16 / API 36, Google APIs x86_64). See `docs/phase0-coldstart.png` and `docs/PHASE_0.md`.
+## Verification screenshots
 
-### Emulator
+Phase 1 end-to-end evidence is in `docs/`:
 
-Hardware acceleration uses the Android Emulator Hypervisor Driver 2.2 (AEHD). Start the AVD with:
+- `phase1-profile.png` — profile setup
+- `phase1-created.png` — invite code after creating a Circle
+- `phase1-circle-detail-a.png` — owner with 1 member
+- `phase1-joined-b.png` — member B sees both members
+- `phase1-a-return.png` — owner A sees both members
+- `phase1-b-relaunch.png` — B after leaving, no Circles
+- `phase1-a-after-leave.png` — A after B leaves, 1 member
+
+## Emulator
+
+Hardware acceleration uses the Android Emulator Hypervisor Driver 2.2 (AEHD). AVD `Around_API_36` is a Pixel 10 / Android 16 / Google APIs x86_64 image.
 
 ```powershell
 & "$env:LOCALAPPDATA\Android\Sdk\emulator\emulator.exe" -avd Around_API_36
 ```
 
-For headless runs (CI-style local checks):
+Headless:
 
 ```powershell
 & "$env:LOCALAPPDATA\Android\Sdk\emulator\emulator.exe" -avd Around_API_36 `
   -no-window -no-audio -no-boot-anim -gpu swiftshader_indirect
 ```
 
-Then install and launch:
-
-```powershell
-adb install -r app/build/outputs/apk/debug/app-debug.apk
-adb shell am start -n com.around.app/.MainActivity
-```
-
 ## Secrets
 
 - `app/google-services.json` is gitignored and must not be committed to this public repo. Use `app/google-services.json.example` as the template.
-- The Firebase Admin SDK key was moved out of the project to `C:\Users\axioo\.around-secrets\around-847b3-firebase-adminsdk-fbsvc-635bcb8a68.json`. Keep it there or in a password manager; never add it to the repo.
+- The Firebase Admin SDK key is outside the repository at `C:\Users\axioo\.around-secrets\around-847b3-firebase-adminsdk-fbsvc-635bcb8a68.json`.
 - Keystores, `.env` files, and service-account JSON files are gitignored.
 
 ## Version baseline
@@ -121,7 +139,7 @@ adb shell am start -n com.around.app/.MainActivity
 | Phase | Status |
 |---|---|
 | M0 / Phase 0 — Foundations | **Done and verified** |
-| M1 / Phase 1 — Identity and Circles | Not started |
+| M1 / Phase 1 — Identity and Circles | **Done on emulator; production deploy pending Blaze** |
 | M2 / Phase 2 — Live sharing | Not started |
 | M3 / Phase 3 — History and last-known | Not started |
 | M4 / Phase 4 — Places and alerts | Not started |

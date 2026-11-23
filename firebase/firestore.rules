@@ -2,9 +2,99 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Phase 0 placeholder: deny everything.
-    // Phase 1 replaces this with the member-scoped rules from PROJECT_PLAN.md section 7.4.
-    match /{document=**} {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function currentUid() {
+      return request.auth.uid;
+    }
+
+    function isMember(circleId) {
+      return signedIn() &&
+        exists(/databases/$(database)/documents/circles/$(circleId)/members/$(currentUid()));
+    }
+
+    function isOwner(circleId) {
+      return isMember(circleId) &&
+        get(/databases/$(database)/documents/circles/$(circleId)/members/$(currentUid())).data.role == 'owner';
+    }
+
+    function validAvatar(data) {
+      return data is map &&
+        data.type in ['emoji', 'color'] &&
+        data.value is string &&
+        data.value.size() >= 1 &&
+        data.value.size() <= 8;
+    }
+
+    function validDisplayName(value) {
+      return value is string && value.size() >= 1 && value.size() <= 30;
+    }
+
+    match /users/{userId} {
+      allow read: if signedIn() && currentUid() == userId;
+      allow create, update: if signedIn() &&
+        currentUid() == userId &&
+        validDisplayName(request.resource.data.displayName) &&
+        validAvatar(request.resource.data.avatar);
+      allow delete: if false;
+
+      match /devices/{deviceId} {
+        allow read, write: if signedIn() && currentUid() == userId;
+      }
+    }
+
+    match /circles/{circleId} {
+      // memberUids keeps list queries (whereArrayContains) rule-friendly.
+      allow read: if signedIn() &&
+        (currentUid() in resource.data.memberUids || isMember(circleId));
+      allow write: if false;
+
+      match /members/{memberUid} {
+        allow read: if isMember(circleId);
+        allow update: if signedIn() &&
+          currentUid() == memberUid &&
+          isMember(circleId) &&
+          request.resource.data.diff(resource.data).affectedKeys()
+            .hasOnly(['displayName', 'avatar', 'sharing', 'allowRing']) &&
+          validDisplayName(request.resource.data.displayName) &&
+          validAvatar(request.resource.data.avatar) &&
+          (!('sharing' in request.resource.data.diff(resource.data).affectedKeys()) ||
+            request.resource.data.sharing is bool) &&
+          (!('allowRing' in request.resource.data.diff(resource.data).affectedKeys()) ||
+            request.resource.data.allowRing is bool);
+        allow create, delete: if false;
+      }
+
+      match /places/{placeId} {
+        allow read: if isMember(circleId);
+        allow create: if isMember(circleId) &&
+          request.resource.data.createdBy == currentUid() &&
+          request.resource.data.radiusM >= 100;
+        allow update, delete: if isOwner(circleId) ||
+          (isMember(circleId) && resource.data.createdBy == currentUid());
+      }
+
+      match /events/{eventId} {
+        allow read: if isMember(circleId);
+        allow create: if isMember(circleId) &&
+          request.resource.data.uid == currentUid() &&
+          request.resource.data.type in ['arrive', 'leave'];
+        allow update, delete: if false;
+      }
+    }
+
+    match /inviteCodes/{code} {
+      allow read, write: if false;
+    }
+
+    match /userSecrets/{userId} {
+      allow read, write: if false;
+    }
+
+    match /joinAttempts/{userId} {
       allow read, write: if false;
     }
   }
