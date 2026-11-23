@@ -1,5 +1,7 @@
 # Circle Tracker (working title): Project & Development Plan
 
+> **Architecture update 2026-11-23:** To keep the project 100% free, the Cloud Functions/Blaze assumption is replaced by a **Vercel Hobby relay**. Firebase stays on Spark. See [docs/decisions/0002-vercel-relay.md](docs/decisions/0002-vercel-relay.md). Cloud Functions references in sections 5.x, 6, 7.5, and 9 below are superseded by that ADR.
+
 **Type:** Free, personal-use Android app for real-time location sharing inside small private groups ("Circles")
 **Stack:** Kotlin + Jetpack Compose, Firebase (Auth, Realtime Database, Firestore, Functions, FCM), MapLibre + OpenStreetMap
 **Plan date:** 2026-11-23 · **Assumed pace:** solo, about 10 hours/week → about 12 weeks to v1.0
@@ -18,7 +20,7 @@
 | Design | Material 3 with dynamic color, light and dark mode, English + Bahasa Indonesia |
 | Audience | Families, friend groups, couples; fewer than 20 users; personal project |
 | Auth | Firebase Anonymous Auth, joining Circles with an invite (share) code, PIN-based recovery |
-| Firebase plan | Blaze (pay-as-you-go) with a hard budget alert, staying inside no-cost quotas |
+| Firebase plan | Spark (free) + Vercel Hobby relay; no billing account |
 | Databases | Realtime Database for live location and history; Firestore for profiles, Circles, places, events |
 | MVP scope | Create/join Circle by code · live location in a foreground service · member map (avatar, battery, last updated) · short history · place alerts (arrive/leave) via push · "ring my phone" + last-known location |
 
@@ -82,7 +84,7 @@
 | Tiles / style | OpenFreeMap style URL, kept in Remote Config | Lets you swap tile provider without a release; re-check provider terms |
 | Location | Play Services Fused Location Provider + Geofencing API | Phones without Google Play services are unsupported |
 | Firebase (client) | BoM-managed: Auth, Realtime Database, Firestore, Messaging, Remote Config, Crashlytics, App Check | Do not pin versions by hand; use the BoM |
-| Firebase (server) | Cloud Functions 2nd gen, TypeScript | Needs Blaze plan |
+| Firebase (server) | Vercel Functions (Node 22, TypeScript), free Hobby tier | Replaces Cloud Functions; see ADR 0002 |
 | Local storage | Jetpack DataStore | Settings, onboarding state, device ID |
 | i18n | `values/` (English) + `values-in/` (Indonesian) | Per-app language via AppCompat locales |
 | Testing | JUnit, MockK, Turbine, Compose UI tests, Firebase Emulator Suite, rules unit tests | Emulators work without a billing account |
@@ -104,7 +106,7 @@
 
 Notes:
 - On Spark, exceeding a no-cost quota shuts that product off for the rest of the month. On Blaze you are billed for overage instead.
-- Blaze is mandatory because Cloud Functions requires it. You may be eligible for Google Cloud's $300 credit.
+- Cloud Functions is unavailable on Spark. Privileged logic runs on the free Vercel Hobby relay instead (ADR 0002); Firebase Auth, Firestore, RTDB, FCM receiving, Remote Config, and Crashlytics stay on Spark.
 - Deploying functions uses Cloud Build and Artifact Registry (first 500 MB free). Expect pennies at most.
 
 ### 5.2 Guardrails (do these in Phase 0)
@@ -147,7 +149,7 @@ flowchart LR
     AUTH[Auth: anonymous]
     RTDB[(Realtime Database)]
     FS[(Firestore)]
-    FN[Cloud Functions]
+    FN[Vercel API]
     FCM[Cloud Messaging]
     RC[Remote Config]
   end
@@ -363,7 +365,9 @@ service cloud.firestore {
 
 Treat both rule sets as a starting point. Cover them with emulator-based tests in Phase 1 and re-run in CI.
 
-### 7.5 Cloud Functions (2nd gen, TypeScript)
+### 7.5 API operations (Vercel Hobby relay)
+
+Implemented as authenticated HTTPS endpoints on the Vercel relay, not Cloud Functions. See [ADR 0002](docs/decisions/0002-vercel-relay.md). The table below remains the functional specification.
 
 | Function | Trigger | Purpose |
 |---|---|---|
@@ -401,7 +405,7 @@ app/src/main/java/<your.package>/
     RingService.kt
     AppMessagingService.kt
     BootReceiver.kt
-functions/                       // TypeScript Cloud Functions
+backend/                         // Vercel relay: API routes, Admin SDK, tests
 firebase/                        // database.rules.json, firestore.rules, firestore.indexes.json, firebase.json
 docs/                            // this plan, ADRs
 ```
@@ -585,7 +589,7 @@ Timeline assumes about 10 hours/week. Scale it if your pace differs.
 
 - Firebase pricing and plans: https://firebase.google.com/pricing and https://firebase.google.com/docs/projects/billing/firebase-pricing-plans
 - Realtime Database limits and FAQ: https://firebase.google.com/docs/database/usage/limits and https://firebase.google.com/docs/database/faq-and-troubleshooting
-- Cloud Functions for Firebase FAQ (Blaze requirement, no-cost tier, emulator): https://firebase.google.com/docs/functions/faq-and-troubleshooting
+- Cloud Functions for Firebase FAQ (Blaze requirement) and Vercel Hobby limits: https://firebase.google.com/docs/functions/faq-and-troubleshooting · https://vercel.com/docs/plans/hobby
 - Android background location limits: https://developer.android.com/about/versions/oreo/background-location-limits
 - Android background location best practices: https://developer.android.com/training/location/background
 - MapLibre Native: https://github.com/maplibre/maplibre-native

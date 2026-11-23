@@ -1,7 +1,4 @@
-import "./admin";
-
-import { getDatabase } from "firebase-admin/database";
-import { logger } from "firebase-functions";
+import { rtdb } from "./firebase";
 
 export async function mirrorMember(
   circleId: string,
@@ -9,11 +6,11 @@ export async function mirrorMember(
   role: "owner" | "member",
 ): Promise<void> {
   try {
-    await getDatabase()
+    await rtdb
       .ref(`circleMembers/${circleId}/${uid}`)
       .set({ role, joinedAt: Date.now() });
   } catch (error) {
-    logger.error("Failed to mirror membership to RTDB", {
+    console.error("Failed to mirror membership to RTDB", {
       circleId,
       uid,
       error,
@@ -21,10 +18,6 @@ export async function mirrorMember(
   }
 }
 
-/**
- * Removes all RTDB data for a member. Called before Firestore membership removal
- * so a failed cleanup never leaves stale RTDB access behind.
- */
 export async function deleteMemberRealtimeData(
   circleId: string,
   uid: string,
@@ -36,9 +29,9 @@ export async function deleteMemberRealtimeData(
   };
 
   try {
-    await getDatabase().ref().update(updates);
+    await rtdb.ref().update(updates);
   } catch (error) {
-    logger.error("Failed to delete RTDB member data", {
+    console.error("Failed to delete RTDB member data", {
       circleId,
       uid,
       error,

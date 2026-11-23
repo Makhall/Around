@@ -8,8 +8,6 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.database
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.firestore
-import com.google.firebase.functions.FirebaseFunctions
-import com.google.firebase.functions.functions
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -31,11 +29,6 @@ object FirebaseModule {
     @Provides
     @Singleton
     fun provideFirestore(): FirebaseFirestore = Firebase.firestore
-
-    @Provides
-    @Singleton
-    fun provideFunctions(): FirebaseFunctions =
-        Firebase.functions(BackendConfig.FUNCTIONS_REGION)
 
     @Provides
     @Singleton

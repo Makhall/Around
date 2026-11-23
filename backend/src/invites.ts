@@ -1,11 +1,7 @@
-import "./admin";
+import { FieldValue, Timestamp } from "firebase-admin/firestore";
 
-import { FieldValue, Timestamp, type Firestore } from "firebase-admin/firestore";
-
-import {
-  INVITE_CODE_MAX_USES,
-  INVITE_CODE_TTL_MS,
-} from "./constants";
+import { INVITE_CODE_MAX_USES, INVITE_CODE_TTL_MS } from "./constants";
+import { db } from "./firebase";
 import { generateInviteCode, hashInviteCode } from "./util";
 
 export interface IssuedInvite {
@@ -14,7 +10,6 @@ export interface IssuedInvite {
 }
 
 export async function issueInviteCode(
-  db: Firestore,
   circleId: string,
   createdBy: string,
 ): Promise<IssuedInvite> {
@@ -34,10 +29,7 @@ export async function issueInviteCode(
   return { code, expiresAt: expiresAt.toMillis() };
 }
 
-export async function revokeInviteCodes(
-  db: Firestore,
-  circleId: string,
-): Promise<void> {
+export async function revokeInviteCodes(circleId: string): Promise<void> {
   const existing = await db
     .collection("inviteCodes")
     .where("circleId", "==", circleId)
@@ -48,9 +40,9 @@ export async function revokeInviteCodes(
   }
 
   const batch = db.batch();
-  existing.docs.forEach((doc) => {
-    if (doc.get("revoked") !== true) {
-      batch.update(doc.ref, { revoked: true });
+  existing.docs.forEach((document) => {
+    if (document.get("revoked") !== true) {
+      batch.update(document.ref, { revoked: true });
     }
   });
   await batch.commit();

@@ -11,6 +11,14 @@ val useFirebaseEmulators = providers.gradleProperty("useFirebaseEmulators")
     .getOrElse("false")
     .toBoolean()
 
+val apiBaseUrl = providers.gradleProperty("aroundApiBaseUrl").getOrElse(
+    if (useFirebaseEmulators) {
+        "http://10.0.2.2:3000"
+    } else {
+        "https://around-api.vercel.app"
+    },
+)
+
 android {
     namespace = "com.around.app"
     compileSdk {
@@ -40,6 +48,7 @@ android {
             "USE_FIREBASE_EMULATORS",
             useFirebaseEmulators.toString(),
         )
+        buildConfigField("String", "API_BASE_URL", "\"$apiBaseUrl\"")
     }
 
     buildTypes {
@@ -99,10 +108,10 @@ dependencies {
     implementation(libs.firebase.auth)
     implementation(libs.firebase.database)
     implementation(libs.firebase.firestore)
-    implementation(libs.firebase.functions)
 
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.kotlinx.coroutines.play.services)
+    implementation(libs.okhttp)
 
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)

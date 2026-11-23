@@ -77,6 +77,7 @@
 
     <string name="error_invalid_name">Masukkan nama Circle 1–40 karakter.</string>
     <string name="error_code_required">Masukkan kode undangan 8 karakter.</string>
+    <string name="error_invalid_request">Permintaan tidak valid. Coba lagi.</string>
     <string name="error_too_many_circles">Kamu bisa berada di maksimal 3 Circle.</string>
     <string name="error_profile_missing">Selesaikan profilmu dulu.</string>
     <string name="error_code_not_found">Kode undangan tidak ditemukan. Periksa 8 karakter lalu coba lagi.</string>

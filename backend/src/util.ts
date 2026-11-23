@@ -1,7 +1,5 @@
 import { createHash, randomBytes } from "node:crypto";
 
-import type { CallableRequest } from "firebase-functions/v2/https";
-
 import {
   INVITE_ALPHABET,
   INVITE_CODE_LENGTH,
@@ -15,25 +13,11 @@ export interface Avatar {
   value: string;
 }
 
-export function requireAuth(request: CallableRequest): string {
-  const uid = request.auth?.uid;
-  if (!uid) {
-    fail("unauthenticated", "Sign-in required", "unauthenticated");
+export function requireObject(value: unknown): Record<string, unknown> {
+  if (typeof value !== "object" || value === null || Array.isArray(value)) {
+    fail(400, "invalid_request", "Request body must be a JSON object");
   }
-  return uid;
-}
-
-export function requireData(
-  request: CallableRequest,
-): Record<string, unknown> {
-  if (
-    typeof request.data !== "object" ||
-    request.data === null ||
-    Array.isArray(request.data)
-  ) {
-    fail("invalid-argument", "Request data must be an object", "invalid_name");
-  }
-  return request.data as Record<string, unknown>;
+  return value as Record<string, unknown>;
 }
 
 export function requireString(
@@ -41,8 +25,8 @@ export function requireString(
   key: string,
 ): string {
   const value = data[key];
-  if (typeof value !== "string") {
-    fail("invalid-argument", `Missing ${key}`, "invalid_name");
+  if (typeof value !== "string" || value.length === 0) {
+    fail(400, "invalid_request", `Missing ${key}`);
   }
   return value;
 }
@@ -51,9 +35,9 @@ export function normalizeCircleName(raw: string): string {
   const name = raw.trim();
   if (name.length < 1 || name.length > MAX_CIRCLE_NAME_LENGTH) {
     fail(
-      "invalid-argument",
-      `Circle name must be 1-${MAX_CIRCLE_NAME_LENGTH} characters`,
+      400,
       "invalid_name",
+      `Circle name must be 1-${MAX_CIRCLE_NAME_LENGTH} characters`,
     );
   }
   return name;

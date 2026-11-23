@@ -1,5 +1,7 @@
 # Phase 0 — Foundations
 
+> **Note:** Phase 0 initially used a Firebase Cloud Functions health check. Phase 1 replaced Cloud Functions with the free Vercel Hobby relay to keep the project on the Spark plan. See [ADR 0002](decisions/0002-vercel-relay.md).
+
 **Goal:** cold start → anonymous sign-in → home placeholder, with CI green.
 
 ## Delivered
@@ -13,11 +15,11 @@
 - `AuthRepository` + `FirebaseAuthRepository`, anonymous sign-in through `kotlinx-coroutines-play-services`
 - `HomeViewModel` with `Loading` / `Ready(uid)` / `Error` states and retry
 - Firebase providers for Auth, Realtime Database, and Firestore
-- Firebase Emulator Suite configuration for Auth, RTDB, Firestore, and Functions
-- Cloud Functions v2 TypeScript skeleton: global `maxInstances: 3`, region `asia-southeast1`, `health` HTTP function
+- Firebase Emulator Suite configuration for Auth, RTDB, and Firestore (the Phase 0 Functions emulator was removed in Phase 1)
+- Phase 0 Functions health check (later replaced by the Vercel API relay)
 - Remote Config template with `sharing_enabled` and `map_style_url`
 - Deny-all placeholder security rules (replaced in Phase 1)
-- GitHub Actions CI for lint, unit tests, debug APK, and Functions build
+- GitHub Actions CI for lint, unit tests, debug APK, and backend build
 - `.gitignore` covering `google-services.json`, Admin SDK keys, keystores, and local files
 
 ## Verified locally
@@ -28,7 +30,7 @@
 | `:app:testDebugUnitTest` | 3 tests, 0 failures |
 | `:app:lintDebug` | 0 issues |
 | `npm run build` (functions) | Passed |
-| `firebase emulators:exec` (Auth, RTDB, Firestore, Functions) | All started; `health` loaded |
+| `firebase emulators:exec` (Auth, RTDB, Firestore) | All started (Functions health check was later removed) |
 | Debug APK | `app/build/outputs/apk/debug/app-debug.apk` |
 | Emulator cold start (AVD `Around_API_36`) | Reached "You're all set" with a live anonymous ID |
 | Force-stop + relaunch | Same anonymous ID, Auth persisted |
@@ -55,7 +57,7 @@
 - The installed global JDK is 27, but the build was verified with Android Studio's JBR 25. Use `JAVA_HOME=C:\Program Files\Android\Android Studio\jbr` for command-line builds.
 - `local.properties` is gitignored and points at the local SDK; its Windows drive colon is escaped (`C\:`) to satisfy lint.
 - The Firebase Admin SDK key was moved outside the repository to `C:\Users\axioo\.around-secrets\`.
-- The Functions emulator warns that local Node 24 differs from the declared Node 22 runtime. CI uses Node 22; deploy targets Node 22.
+- Node 22 is required for the Vercel API. The local machine used Node 24 for the emulator tests; CI uses Node 22.
 - `HomeViewModel` logs the Auth exception tag `HomeViewModel` while keeping the user-facing error localized.
 
 ## Definition of done

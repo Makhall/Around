@@ -1,5 +1,3 @@
-export const REGION = "asia-southeast1";
-
 export const MAX_CIRCLES_PER_USER = 3;
 export const MAX_MEMBERS_PER_CIRCLE = 20;
 

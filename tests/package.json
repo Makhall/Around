@@ -2,9 +2,9 @@
   "name": "around-tests",
   "private": true,
   "scripts": {
-    "test": "node --test --test-concurrency=1",
-    "test:rules": "node --test --test-concurrency=1 rules",
-    "test:functions": "node --test --test-concurrency=1 functions"
+    "test": "node --test --test-concurrency=1 --test-force-exit",
+    "test:rules": "node --test --test-concurrency=1 --test-force-exit rules",
+    "test:api": "node --test --test-concurrency=1 --test-force-exit api"
   },
   "dependencies": {
     "@firebase/rules-unit-testing": "^6.0.0",

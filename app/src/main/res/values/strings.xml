@@ -77,6 +77,7 @@
 
     <string name="error_invalid_name">Enter a Circle name between 1 and 40 characters.</string>
     <string name="error_code_required">Enter the 8-character invite code.</string>
+    <string name="error_invalid_request">The request was invalid. Try again.</string>
     <string name="error_too_many_circles">You can be in at most 3 Circles.</string>
     <string name="error_profile_missing">Finish your profile first.</string>
     <string name="error_code_not_found">That invite code doesn\'t exist. Check the 8 characters and try again.</string>

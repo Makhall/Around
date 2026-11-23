@@ -86,6 +86,7 @@ enum class CircleError {
     INVALID_NAME,
     NAME_REQUIRED,
     CODE_REQUIRED,
+    INVALID_REQUEST,
     TOO_MANY_CIRCLES,
     PROFILE_MISSING,
     CODE_NOT_FOUND,
@@ -110,3 +111,23 @@ class CircleOperationException(
 
 fun Throwable.toCircleError(): CircleError =
     (this as? CircleOperationException)?.error ?: CircleError.UNKNOWN
+
+fun circleErrorFromApiCode(code: String?): CircleError = when (code) {
+    "invalid_name" -> CircleError.INVALID_NAME
+    "invalid_request" -> CircleError.INVALID_REQUEST
+    "profile_missing" -> CircleError.PROFILE_MISSING
+    "too_many_circles" -> CircleError.TOO_MANY_CIRCLES
+    "code_not_found" -> CircleError.CODE_NOT_FOUND
+    "code_expired" -> CircleError.CODE_EXPIRED
+    "code_revoked" -> CircleError.CODE_REVOKED
+    "code_exhausted" -> CircleError.CODE_EXHAUSTED
+    "circle_full" -> CircleError.CIRCLE_FULL
+    "already_member" -> CircleError.ALREADY_MEMBER
+    "rate_limited" -> CircleError.RATE_LIMITED
+    "owner_cannot_leave" -> CircleError.OWNER_CANNOT_LEAVE
+    "not_owner" -> CircleError.NOT_OWNER
+    "member_not_found" -> CircleError.MEMBER_NOT_FOUND
+    "circle_not_found" -> CircleError.CIRCLE_NOT_FOUND
+    "unauthenticated" -> CircleError.UNAUTHENTICATED
+    else -> CircleError.UNKNOWN
+}

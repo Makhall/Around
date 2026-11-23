@@ -11,6 +11,7 @@ fun CircleError.userMessage(): String = stringResource(
         CircleError.INVALID_NAME -> R.string.error_invalid_name
         CircleError.NAME_REQUIRED -> R.string.profile_error_name
         CircleError.CODE_REQUIRED -> R.string.error_code_required
+        CircleError.INVALID_REQUEST -> R.string.error_invalid_request
         CircleError.TOO_MANY_CIRCLES -> R.string.error_too_many_circles
         CircleError.PROFILE_MISSING -> R.string.error_profile_missing
         CircleError.CODE_NOT_FOUND -> R.string.error_code_not_found

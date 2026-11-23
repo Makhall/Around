@@ -2,6 +2,7 @@
 .gradle/
 build/
 !gradle/wrapper/gradle-wrapper.jar
+.kotlin/
 
 # Android Studio / IntelliJ
 .idea/
@@ -26,14 +27,20 @@ service-account*.json
 firebase-debug.log
 firestore-debug.log
 ui-debug.log
-functions/node_modules/
-functions/lib/
-functions/.env
-functions/*.local
+database-debug.log
+
+# Vercel API
+backend/node_modules/
+backend/dist/
+backend/.env
+backend/.env.local
+!backend/.env.example
+.vercel/
+
+# Tests
+tests/node_modules/
 
 # OS / logs
 .DS_Store
 Thumbs.db
 *.log
-
-tests/node_modules/
