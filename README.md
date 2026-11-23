@@ -75,6 +75,28 @@ These are console/billing tasks that cannot be done from the repo:
 
 Runtime verification was completed on the local AVD `Around_API_36` (Pixel 10, Android 16 / API 36, Google APIs x86_64). See `docs/phase0-coldstart.png` and `docs/PHASE_0.md`.
 
+### Emulator
+
+Hardware acceleration uses the Android Emulator Hypervisor Driver 2.2 (AEHD). Start the AVD with:
+
+```powershell
+& "$env:LOCALAPPDATA\Android\Sdk\emulator\emulator.exe" -avd Around_API_36
+```
+
+For headless runs (CI-style local checks):
+
+```powershell
+& "$env:LOCALAPPDATA\Android\Sdk\emulator\emulator.exe" -avd Around_API_36 `
+  -no-window -no-audio -no-boot-anim -gpu swiftshader_indirect
+```
+
+Then install and launch:
+
+```powershell
+adb install -r app/build/outputs/apk/debug/app-debug.apk
+adb shell am start -n com.around.app/.MainActivity
+```
+
 ## Secrets
 
 - `app/google-services.json` is gitignored and must not be committed to this public repo. Use `app/google-services.json.example` as the template.
