@@ -84,7 +84,7 @@
 | Tiles / style | OpenFreeMap style URL, kept in Remote Config | Lets you swap tile provider without a release; re-check provider terms |
 | Location | Play Services Fused Location Provider + Geofencing API | Phones without Google Play services are unsupported |
 | Firebase (client) | BoM-managed: Auth, Realtime Database, Firestore, Messaging, Remote Config, Crashlytics, App Check | Do not pin versions by hand; use the BoM |
-| Firebase (server) | Vercel Functions (Node 22, TypeScript), free Hobby tier | Replaces Cloud Functions; see ADR 0002 |
+| Firebase (server) | Vercel Functions (Node 24, TypeScript), free Hobby tier | Replaces Cloud Functions; see ADR 0002 |
 | Local storage | Jetpack DataStore | Settings, onboarding state, device ID |
 | i18n | `values/` (English) + `values-in/` (Indonesian) | Per-app language via AppCompat locales |
 | Testing | JUnit, MockK, Turbine, Compose UI tests, Firebase Emulator Suite, rules unit tests | Emulators work without a billing account |

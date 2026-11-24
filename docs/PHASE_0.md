@@ -57,7 +57,7 @@
 - The installed global JDK is 27, but the build was verified with Android Studio's JBR 25. Use `JAVA_HOME=C:\Program Files\Android\Android Studio\jbr` for command-line builds.
 - `local.properties` is gitignored and points at the local SDK; its Windows drive colon is escaped (`C\:`) to satisfy lint.
 - The Firebase Admin SDK key was moved outside the repository to `C:\Users\axioo\.around-secrets\`.
-- Node 22 is required for the Vercel API. The local machine used Node 24 for the emulator tests; CI uses Node 22.
+- Node 24 is required for the Vercel API. The local machine and CI use Node 24.
 - `HomeViewModel` logs the Auth exception tag `HomeViewModel` while keeping the user-facing error localized.
 
 ## Definition of done

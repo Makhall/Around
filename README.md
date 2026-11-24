@@ -2,7 +2,7 @@
 
 Private, consent-based location sharing for small trusted groups. Android-only, built with Kotlin, Jetpack Compose, Firebase Spark, a free Vercel Hobby relay, and MapLibre/OpenStreetMap.
 
-**Status: Phase 1 — Identity and Circles (verified on an Android 16 emulator).** Anonymous sign-in, profiles, Circles, invite codes, member lists, and access revocation are in place. Live sharing, history, places, and ring arrive in later phases.
+**Status: Phase 1 — Identity and Circles (verified on an Android 16 emulator; API deployed to Vercel).** Firestore is enabled in `asia-southeast2` and rules are deployed. Production create/join is waiting on a one-time IAM role grant for the Vercel service account.
 
 The full product plan lives in [PROJECT_PLAN.md](PROJECT_PLAN.md). Architecture decision for the free backend: [ADR 0002](docs/decisions/0002-vercel-relay.md). Verification notes: [Phase 0](docs/PHASE_0.md) and [Phase 1](docs/PHASE_1.md). Deployment: [Vercel API](docs/VERCEL.md).
 
@@ -40,7 +40,7 @@ No Blaze plan or payment method is required. Vercel Hobby pauses on overage; it 
 
 - Android Studio with its bundled JDK (25), or any JDK 17+
 - Android SDK platform **37.2** and build-tools 36+ (compileSdk 37.2, targetSdk 37, minSdk 26)
-- Node 22+ and Firebase CLI 15+ for the emulator suite and backend
+- Node 24+ and Firebase CLI 15+ for the emulator suite and backend
 - `app/google-services.json` for project `around-847b3` (present locally, gitignored)
 - A free Vercel account and the Vercel CLI for deployment
 
@@ -74,7 +74,7 @@ adb install -r app\build\outputs\apk\debug\app-debug.apk
 adb shell am start -n com.around.app/.MainActivity
 ```
 
-With `-PuseFirebaseEmulators=true`, the app uses the local emulators and `http://10.0.2.2:3000` for the API. Production builds default to the `https://around-api.vercel.app` placeholder until the real Vercel URL is supplied.
+With `-PuseFirebaseEmulators=true`, the app uses the local emulators and `http://10.0.2.2:3000` for the API. Production builds default to the deployed API at `https://around-api-topaz.vercel.app`; override with `-ParoundApiBaseUrl=...` if needed.
 
 ### Backend tests
 
@@ -111,8 +111,8 @@ The service-account key is stored only in Vercel environment variables. Never co
 
 ### Remaining manual setup
 
-1. **Deploy the Vercel API** and set the three production environment variables.
-2. **Firestore database** — the Cloud Firestore API is not enabled on the project yet. Create a Spark-plan database (choose the region once; `asia-southeast1` matches the RTDB) and deploy rules. Realtime Database is already in `asia-southeast1`.
+1. **Vercel API** — deployed at `https://around-api-topaz.vercel.app`; `/api/health` returns OK. Set the three production environment variables if they are ever rotated.
+2. **Firestore IAM** — the database exists in **`asia-southeast2`** (Jakarta, not Singapore), and Firestore/RTDB rules are deployed. Grant `firebase-adminsdk-fbsvc@around-847b3.iam.gserviceaccount.com` the **Cloud Datastore User** (`roles/datastore.user`) role, or **Editor** for future backend features. Production create/join is blocked until this is granted.
 3. **Anonymous Auth** — enabled and verified in Phase 0.
 4. **Remote Config** — deploy `firebase/remoteconfig.template.json` (`sharing_enabled`, `map_style_url`).
 5. **GitHub Actions** — CI compiles without the private config using `app/google-services.json.example`; set the `GOOGLE_SERVICES_JSON` secret for a real build.
@@ -164,14 +164,14 @@ Headless:
 | Hilt / KSP | 2.60.1 / 2.3.14 |
 | OkHttp | 5.5.1 |
 | compileSdk / targetSdk / minSdk | 37.2 / 37 / 26 |
-| API runtime | Node 22, TypeScript, Vercel Hobby `sin1` |
+| API runtime | Node 24, TypeScript, Vercel Hobby `sin1` |
 
 ## Phase status
 
 | Phase | Status |
 |---|---|
 | M0 / Phase 0 — Foundations | **Done and verified** |
-| M1 / Phase 1 — Identity and Circles | **Done on emulator; Vercel deploy pending** |
+| M1 / Phase 1 — Identity and Circles | **Done on emulator; API deployed; Firestore IAM grant pending** |
 | M2 / Phase 2 — Live sharing | Not started |
 | M3 / Phase 3 — History and last-known | Not started |
 | M4 / Phase 4 — Places and alerts | Not started |

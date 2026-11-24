@@ -20,7 +20,7 @@ Android app
   ├─ Firebase Auth (anonymous)
   ├─ Firestore / RTDB reads and rule-governed writes
   └─ HTTPS + Firebase ID token
-        └─ Vercel Hobby API (Node 22, region sin1)
+        └─ Vercel Hobby API (Node 24, region sin1)
               ├─ firebase-admin: verify ID token
               ├─ Firestore / RTDB admin access
               └─ FCM HTTP v1 (later phases)
@@ -30,7 +30,7 @@ Vercel Hobby was chosen because:
 
 - Free; no payment method required.
 - 1,000,000 function invocations, 4 CPU-hours, and 360 GB-hours per month.
-- Node.js functions run the Firebase Admin SDK without a custom runtime.
+- Node.js functions run the Firebase Admin SDK without a custom runtime; the API uses Node 24 for ESM compatibility.
 - No bills on overage; the service pauses until the limit resets.
 - Free tier is for personal, non-commercial use, which matches this project.
 - Supports a Singapore (`sin1`) region close to the RTDB/Firestore location.

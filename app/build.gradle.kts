@@ -15,7 +15,7 @@ val apiBaseUrl = providers.gradleProperty("aroundApiBaseUrl").getOrElse(
     if (useFirebaseEmulators) {
         "http://10.0.2.2:3000"
     } else {
-        "https://around-api.vercel.app"
+        "https://around-api-topaz.vercel.app"
     },
 )
 

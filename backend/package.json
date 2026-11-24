@@ -2,7 +2,7 @@
   "name": "around-api",
   "private": true,
   "engines": {
-    "node": "22.x"
+    "node": "24.x"
   },
   "scripts": {
     "dev": "tsx dev-server.ts",
@@ -10,7 +10,7 @@
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
-    "firebase-admin": "^14.5.1"
+    "firebase-admin": "^13.6.0"
   },
   "devDependencies": {
     "@types/node": "^22.19.0",

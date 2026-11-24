@@ -26,7 +26,7 @@ Other backend pieces:
 - 8-character invite codes from an unambiguous alphabet, 24 h expiry, max 20 uses, **stored hashed** (`inviteCodes/{sha256(code)}`).
 - `joinAttempts/{uid}` rate limit: 10 failed attempts per 10 minutes.
 - RTDB mirror `circleMembers/{circleId}/{uid}` written by the relay only.
-- One catch-all Vercel function, Node 22, region `sin1`.
+- One catch-all Vercel function, Node 24, region `sin1`.
 - Local `dev-server.ts` runs the same router so API tests do not need a Vercel login.
 
 Architecture details: [ADR 0002](decisions/0002-vercel-relay.md). Deployment: [VERCEL.md](VERCEL.md).
@@ -94,8 +94,8 @@ The Firestore watch stream dropped repeatedly during Android user switching, so 
 
 ## Not done / pending
 
-- **Production Firestore is not enabled.** `firebase firestore:databases:list` returns HTTP 403 because the Cloud Firestore API has not been used in `around-847b3`. A Spark-plan Firestore database (region chosen once; `asia-southeast1` recommended to match RTDB) must be created before production use.
-- **Vercel deployment.** The API is implemented and tested locally but has not been deployed to the user’s Vercel account yet. The production build still uses the placeholder `https://around-api.vercel.app` URL until the deployment URL is supplied.
+- **Production Firestore is enabled** in `asia-southeast2` (Jakarta) and Firestore/RTDB rules are deployed. The service account `firebase-adminsdk-fbsvc@around-847b3.iam.gserviceaccount.com` has no project IAM role yet, so Admin SDK Firestore calls fail with `PERMISSION_DENIED`. Grant it `roles/datastore.user` (or `roles/editor` for future RTDB/FCM/Auth admin operations). Production create/join is blocked until then.
+- **Vercel deployment is live:** `https://around-api-topaz.vercel.app`, project `akha1/around-api`. `/api/health` returns OK. The app defaults to this URL for production builds.
 - Remote Config template has not been deployed.
 - Budget alerts are no longer required; there is no Blaze plan.
 - Owners cannot leave or delete a Circle in Phase 1. A `deleteCircle`/ownership-transfer flow should be added before broader release.
@@ -105,10 +105,14 @@ The Firestore watch stream dropped repeatedly during Android user switching, so 
 
 ## Deploy checklist
 
-1. Create the production Firestore database (Spark plan, choose one region) and deploy rules: `firebase deploy --only firestore:rules,database`.
-2. Deploy `backend/` to Vercel Hobby; set `FIREBASE_SERVICE_ACCOUNT_BASE64`, `FIREBASE_PROJECT_ID`, and `FIREBASE_DATABASE_URL`.
-3. Verify `https://YOUR-PROJECT.vercel.app/api/health`.
-4. Build the app with `-ParoundApiBaseUrl=https://YOUR-PROJECT.vercel.app`.
-5. Run the two-user flow against production.
+1. Grant the backend service account Firestore data access in Google Cloud IAM (`roles/datastore.user`, or `roles/editor` for future features). Production create/join is blocked until this is granted.
+2. Vercel CLI:
+   - Project `akha1/around-api`
+   - Production URL: `https://around-api-topaz.vercel.app`
+   - Environment: `FIREBASE_PROJECT_ID`, `FIREBASE_DATABASE_URL`, `FIREBASE_SERVICE_ACCOUNT_BASE64` (secret)
+   - Health: `https://around-api-topaz.vercel.app/api/health` returns OK
+   - RTDB rules are deployed
+3. Firestore is enabled in `asia-southeast2`; rules are deployed.
+4. Build the app with `-ParoundApiBaseUrl=https://around-api-topaz.vercel.app` (the default now) and run the two-user flow against production after IAM is granted.
 
 See [VERCEL.md](VERCEL.md) for exact commands and [ADR 0002](decisions/0002-vercel-relay.md) for the architecture.
