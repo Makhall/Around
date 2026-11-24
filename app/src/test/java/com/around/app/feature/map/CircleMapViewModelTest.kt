@@ -5,6 +5,7 @@ import com.around.app.FakeAuthRepository
 import com.around.app.FakeCircleRepository
 import com.around.app.FakeConfigRepository
 import com.around.app.FakeLocationRepository
+import com.around.app.FakePlaceRepository
 import com.around.app.MainDispatcherRule
 import com.around.app.data.config.RemoteSettings
 import com.around.app.data.model.Avatar
@@ -83,6 +84,7 @@ class CircleMapViewModelTest {
             authRepository = FakeAuthRepository(),
             circleRepository = circleRepository,
             locationRepository = locationRepository,
+            placeRepository = FakePlaceRepository(),
             configRepository = config,
         )
         return vm to (circleRepository to locationRepository)

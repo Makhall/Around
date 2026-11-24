@@ -33,6 +33,17 @@ service cloud.firestore {
       return value is string && value.size() >= 1 && value.size() <= 30;
     }
 
+    function validPlaceData(data) {
+      return data.name is string &&
+        data.name.size() >= 1 &&
+        data.name.size() <= 40 &&
+        data.radiusM is number &&
+        data.radiusM >= 100 &&
+        data.radiusM <= 1000 &&
+        data.lat is number &&
+        data.lng is number;
+    }
+
     match /users/{userId} {
       allow read: if signedIn() && currentUid() == userId;
       allow create, update: if signedIn() &&
@@ -58,13 +69,15 @@ service cloud.firestore {
           currentUid() == memberUid &&
           isMember(circleId) &&
           request.resource.data.diff(resource.data).affectedKeys()
-            .hasOnly(['displayName', 'avatar', 'sharing', 'historyEnabled', 'allowRing']) &&
+            .hasOnly(['displayName', 'avatar', 'sharing', 'historyEnabled', 'placeAlerts', 'allowRing']) &&
           validDisplayName(request.resource.data.displayName) &&
           validAvatar(request.resource.data.avatar) &&
           (!('sharing' in request.resource.data.diff(resource.data).affectedKeys()) ||
             request.resource.data.sharing is bool) &&
           (!('historyEnabled' in request.resource.data.diff(resource.data).affectedKeys()) ||
             request.resource.data.historyEnabled is bool) &&
+          (!('placeAlerts' in request.resource.data.diff(resource.data).affectedKeys()) ||
+            request.resource.data.placeAlerts is bool) &&
           (!('allowRing' in request.resource.data.diff(resource.data).affectedKeys()) ||
             request.resource.data.allowRing is bool);
         allow create, delete: if false;
@@ -74,17 +87,21 @@ service cloud.firestore {
         allow read: if isMember(circleId);
         allow create: if isMember(circleId) &&
           request.resource.data.createdBy == currentUid() &&
-          request.resource.data.radiusM >= 100;
-        allow update, delete: if isOwner(circleId) ||
+          validPlaceData(request.resource.data);
+        allow update: if (isOwner(circleId) ||
+          (isMember(circleId) && resource.data.createdBy == currentUid())) &&
+          validPlaceData(request.resource.data) &&
+          request.resource.data.createdBy == resource.data.createdBy &&
+          request.resource.data.createdAt == resource.data.createdAt &&
+          request.resource.data.diff(resource.data).affectedKeys()
+            .hasOnly(['name', 'lat', 'lng', 'radiusM']);
+        allow delete: if isOwner(circleId) ||
           (isMember(circleId) && resource.data.createdBy == currentUid());
       }
 
       match /events/{eventId} {
         allow read: if isMember(circleId);
-        allow create: if isMember(circleId) &&
-          request.resource.data.uid == currentUid() &&
-          request.resource.data.type in ['arrive', 'leave'];
-        allow update, delete: if false;
+        allow write: if false;
       }
     }
 

@@ -10,6 +10,8 @@ import kotlinx.coroutines.flow.Flow
 interface CircleRepository {
     fun observeCircles(uid: String): Flow<List<Circle>>
 
+    suspend fun getCircles(uid: String): List<Circle>
+
     fun observeCircle(circleId: String): Flow<Circle?>
 
     fun observeMembers(circleId: String): Flow<List<CircleMember>>
@@ -27,6 +29,12 @@ interface CircleRepository {
     suspend fun setSharing(circleId: String, uid: String, sharing: Boolean): Result<Unit>
 
     suspend fun setHistoryEnabled(
+        circleId: String,
+        uid: String,
+        enabled: Boolean,
+    ): Result<Unit>
+
+    suspend fun setPlaceAlerts(
         circleId: String,
         uid: String,
         enabled: Boolean,

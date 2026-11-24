@@ -2,9 +2,9 @@
 
 Private, consent-based location sharing for small trusted groups. Android-only, built with Kotlin, Jetpack Compose, Firebase Spark, a free Vercel Hobby relay, and MapLibre/OpenStreetMap.
 
-**Status: Phase 3 — History and last-known location (implemented, real-phone verified; walking field test pending).** Phase 1 identity/Circles is production-verified and Phase 2 live sharing is emulator-verified. Phase 3 adds 24-hour route history with a map timeline, per-Circle history consent, a free Vercel cron pruner, and last-known location directions.
+**Status: Phase 4 — Places and alerts (implemented, real-phone verified; geofence crossing pending).** Phase 1 identity/Circles is production-verified and Phase 2 live sharing is emulator-verified. Phase 3 adds 24-hour route history. Phase 4 adds Circle places with a map picker, background geofences, FCM place alerts, and a per-Circle alert mute.
 
-The full product plan lives in [PROJECT_PLAN.md](PROJECT_PLAN.md). Architecture decision for the free backend: [ADR 0002](docs/decisions/0002-vercel-relay.md). Verification notes: [Phase 0](docs/PHASE_0.md), [Phase 1](docs/PHASE_1.md), [Phase 2](docs/PHASE_2.md), and [Phase 3](docs/PHASE_3.md). Deployment: [Vercel API](docs/VERCEL.md).
+The full product plan lives in [PROJECT_PLAN.md](PROJECT_PLAN.md). Architecture decision for the free backend: [ADR 0002](docs/decisions/0002-vercel-relay.md). Verification notes: [Phase 0](docs/PHASE_0.md), [Phase 1](docs/PHASE_1.md), [Phase 2](docs/PHASE_2.md), [Phase 3](docs/PHASE_3.md), and [Phase 4](docs/PHASE_4.md). Deployment: [Vercel API](docs/VERCEL.md).
 
 ## What works now
 
@@ -24,6 +24,10 @@ The full product plan lives in [PROJECT_PLAN.md](PROJECT_PLAN.md). Architecture 
 - Per-Circle **Save history** consent; turning it off deletes that Circle's saved history
 - Daily free Vercel cron pruning of expired history (24 h retention)
 - Last-known **Last seen** copy and **Directions** via the device's maps app
+- Circle **Places** with a MapLibre map picker, 100–1000 m radius, and up to 20 per Circle
+- Background geofences registered after sign-in, place changes, and reboot
+- Arrival/departure **Place alerts** via FCM data messages, with a per-Circle mute
+- Place labels, radius circles, and **At <place>** on the live map
 - Material 3 theme with dynamic color, light/dark, and English + Bahasa Indonesia
 - Hilt DI, type-safe Navigation Compose, Firestore/RTDB-backed repositories
 - Privileged operations run on a free Vercel Hobby Node relay with Firebase ID-token verification
@@ -40,7 +44,7 @@ This project is designed to stay **100% free**:
 | Cloud Firestore | Spark | Profiles, Circles, places, events |
 | Realtime Database | Spark | Live locations, 24 h history, membership mirror |
 | MapLibre + OpenFreeMap | Free | Map rendering; no API key |
-| Cloud Messaging | Free | Receiving push (sending relayed later) |
+| Cloud Messaging | Free | Receiving and sending place alerts via the Vercel relay |
 | Remote Config / Crashlytics | Free | Kill switch, map style, crash reports |
 | Vercel Functions + Cron | Hobby | Trusted API, daily history pruning, future FCM fan-out, ring, recovery |
 
@@ -156,7 +160,12 @@ Phase 2 evidence is in `docs/phase2-map.png` — the live map with the sharing c
 
 Phase 3 evidence is in `docs/phase3-history.png` — the History screen on a real Redmi Android 14 phone with the route, member/range pickers, and timeline.
 
-The screenshots were captured through the local Vercel-style API with the Firebase emulators; Phase 3 was installed and exercised on a physical phone over USB.
+Phase 4 evidence:
+
+- `docs/phase4-places.png` — the Places list with a map-picked place and its radius.
+- `docs/phase4-alert.png` — a **Place alert** notification on the other phone.
+
+The Phase 1 screenshots were captured through the local Vercel-style API with the Firebase emulators. Phase 3 and Phase 4 were installed and exercised on physical phones; Phase 4 used the production API and Firebase project.
 
 ## Emulator
 
@@ -202,6 +211,6 @@ Headless:
 | M1 / Phase 1 — Identity and Circles | **Done and verified, including production create/cleanup** |
 | M2 / Phase 2 — Live sharing | **Implemented and emulator-verified; two-phone field test pending** |
 | M3 / Phase 3 — History and last-known | **Implemented and real-phone verified; walking/field test pending** |
-| M4 / Phase 4 — Places and alerts | Not started |
+| M4 / Phase 4 — Places and alerts | **Implemented and real-phone verified; geofence crossing/field test pending** |
 | M5 / Phase 5 — Ring | Not started |
 | M6 / Phase 6 — Hardening and v1.0 | Not started |

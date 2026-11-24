@@ -9,6 +9,7 @@ import {
 } from "./circles";
 import { pruneHistory } from "./history";
 import { handleCron, handleJson, sendJson } from "./http";
+import { sendPlaceEvent } from "./places";
 
 export async function handleRequest(
   request: IncomingMessage,
@@ -31,6 +32,8 @@ export async function handleRequest(
       return handleJson(request, response, leaveCircle);
     case "/api/removeMember":
       return handleJson(request, response, removeMember);
+    case "/api/placeEvent":
+      return handleJson(request, response, sendPlaceEvent);
     case "/api/cron/pruneHistory":
       return handleCron(request, response, () => pruneHistory());
     default:

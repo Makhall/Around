@@ -11,6 +11,7 @@ import com.around.app.data.remote.AroundApi
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreException
+import com.google.firebase.firestore.Source
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlinx.coroutines.channels.awaitClose
@@ -46,6 +47,14 @@ class FirebaseCircleRepository @Inject constructor(
             throw throwable
         }
     }
+
+    override suspend fun getCircles(uid: String): List<Circle> =
+        firestore.collection("circles")
+            .whereArrayContains("memberUids", uid)
+            .get(Source.SERVER)
+            .await()
+            .documents
+            .mapNotNull { it.toCircle() }
 
     override fun observeCircle(circleId: String): Flow<Circle?> = callbackFlow {
         val listener = firestore.collection("circles")
@@ -133,6 +142,19 @@ class FirebaseCircleRepository @Inject constructor(
             .await()
     }
 
+    override suspend fun setPlaceAlerts(
+        circleId: String,
+        uid: String,
+        enabled: Boolean,
+    ): Result<Unit> = runCatching {
+        firestore.collection("circles")
+            .document(circleId)
+            .collection("members")
+            .document(uid)
+            .update("placeAlerts", enabled)
+            .await()
+    }
+
     private fun DocumentSnapshot.toCircle(): Circle? {
         if (!exists()) {
             return null
@@ -165,6 +187,7 @@ class FirebaseCircleRepository @Inject constructor(
             sharing = getBoolean("sharing") ?: false,
             allowRing = getBoolean("allowRing") ?: true,
             historyEnabled = getBoolean("historyEnabled") ?: true,
+            placeAlerts = getBoolean("placeAlerts") ?: true,
         )
     }
 }

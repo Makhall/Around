@@ -13,6 +13,7 @@ const {
   getDoc,
   getDocs,
   query,
+  serverTimestamp,
   setDoc,
   updateDoc,
   where,
@@ -163,6 +164,9 @@ test("members can update only their own allowed member fields", async () => {
     updateDoc(doc(db, "circles/c1/members/alice"), { historyEnabled: false }),
   );
   await assertSucceeds(
+    updateDoc(doc(db, "circles/c1/members/alice"), { placeAlerts: false }),
+  );
+  await assertSucceeds(
     updateDoc(doc(db, "circles/c1/members/alice"), {
       displayName: "Alice",
       avatar: { type: "color", value: "#006A6A" },
@@ -173,6 +177,57 @@ test("members can update only their own allowed member fields", async () => {
   );
   await assertFails(
     updateDoc(doc(db, "circles/c1/members/bob"), { sharing: true }),
+  );
+});
+
+test("members manage Places but cannot write alert events", async () => {
+  const db = testEnv.authenticatedContext("alice").firestore();
+  const outsider = testEnv.authenticatedContext("carol").firestore();
+  const place = doc(db, "circles/c1/places/home");
+
+  await assertSucceeds(
+    setDoc(place, {
+      name: "Home",
+      lat: 1,
+      lng: 2,
+      radiusM: 150,
+      createdBy: "alice",
+      createdAt: serverTimestamp(),
+    }),
+  );
+  await assertFails(
+    setDoc(doc(db, "circles/c1/places/small"), {
+      name: "Small",
+      lat: 1,
+      lng: 2,
+      radiusM: 50,
+      createdBy: "alice",
+      createdAt: serverTimestamp(),
+    }),
+  );
+  await assertFails(
+    setDoc(doc(outsider, "circles/c1/places/outside"), {
+      name: "Outside",
+      lat: 1,
+      lng: 2,
+      radiusM: 150,
+      createdBy: "carol",
+      createdAt: serverTimestamp(),
+    }),
+  );
+  await assertSucceeds(updateDoc(place, { name: "Home 2" }));
+  await assertSucceeds(updateDoc(place, { radiusM: 300 }));
+  await assertFails(updateDoc(place, { radiusM: 2000 }));
+  await assertFails(updateDoc(place, { name: "" }));
+  await assertFails(updateDoc(place, { createdBy: "bob" }));
+  await assertSucceeds(getDocs(collection(db, "circles/c1/events")));
+  await assertFails(
+    setDoc(doc(db, "circles/c1/events/e1"), {
+      type: "arrive",
+      uid: "alice",
+      placeId: "home",
+      createdAt: serverTimestamp(),
+    }),
   );
 });
 

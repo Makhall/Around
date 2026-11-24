@@ -148,6 +148,30 @@ class CircleDetailViewModel @Inject constructor(
         }
     }
 
+    fun setPlaceAlerts(enabled: Boolean) {
+        val uid = currentUid ?: return
+        if (_uiState.value.placeAlertsUpdating) {
+            return
+        }
+
+        viewModelScope.launch {
+            _uiState.update { it.copy(placeAlertsUpdating = true, error = null) }
+            circleRepository.setPlaceAlerts(circleId, uid, enabled).fold(
+                onSuccess = {
+                    _uiState.update { it.copy(placeAlertsUpdating = false) }
+                },
+                onFailure = { throwable ->
+                    _uiState.update {
+                        it.copy(
+                            placeAlertsUpdating = false,
+                            error = throwable.toCircleError(),
+                        )
+                    }
+                },
+            )
+        }
+    }
+
     fun setHistoryEnabled(enabled: Boolean) {
         val uid = currentUid ?: return
         if (_uiState.value.historyUpdating) {

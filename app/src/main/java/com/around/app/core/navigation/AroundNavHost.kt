@@ -1,10 +1,13 @@
 package com.around.app.core.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
 import com.around.app.feature.circles.CircleDetailScreen
 import com.around.app.feature.circles.CirclesScreen
 import com.around.app.feature.circles.CreateCircleScreen
@@ -12,13 +15,32 @@ import com.around.app.feature.circles.JoinCircleScreen
 import com.around.app.feature.history.HistoryScreen
 import com.around.app.feature.map.CircleMapScreen
 import com.around.app.feature.permissions.PermissionScreen
+import com.around.app.feature.places.PlaceEditorScreen
+import com.around.app.feature.places.PlacesScreen
 import com.around.app.feature.profile.ProfileScreen
 import com.around.app.feature.session.SessionScreen
 
 @Composable
 fun AroundNavHost(
     navController: NavHostController = rememberNavController(),
+    notificationCircleId: String? = null,
+    onNotificationCircleHandled: () -> Unit = {},
 ) {
+    LaunchedEffect(notificationCircleId) {
+        val circleId = notificationCircleId ?: return@LaunchedEffect
+        val destination = navController.currentBackStackEntry?.destination
+        if (destination == null ||
+            destination.hasRoute<SessionRoute>() ||
+            destination.hasRoute<ProfileSetupRoute>()
+        ) {
+            return@LaunchedEffect
+        }
+        navController.navigate(CircleMapRoute(circleId)) {
+            launchSingleTop = true
+        }
+        onNotificationCircleHandled()
+    }
+
     NavHost(
         navController = navController,
         startDestination = SessionRoute,
@@ -28,6 +50,10 @@ fun AroundNavHost(
                 onReady = {
                     navController.navigate(CirclesRoute) {
                         popUpTo<SessionRoute> { inclusive = true }
+                    }
+                    notificationCircleId?.let { circleId ->
+                        navController.navigate(CircleMapRoute(circleId))
+                        onNotificationCircleHandled()
                     }
                 },
                 onNeedsProfile = {
@@ -103,6 +129,9 @@ fun AroundNavHost(
                 onOpenHistory = { circleId ->
                     navController.navigate(HistoryRoute(circleId))
                 },
+                onOpenPlaces = { circleId ->
+                    navController.navigate(PlacesRoute(circleId))
+                },
                 onOpenPermissions = {
                     navController.navigate(PermissionRoute)
                 },
@@ -124,6 +153,28 @@ fun AroundNavHost(
         composable<HistoryRoute> {
             HistoryScreen(
                 onBack = { navController.popBackStack() },
+            )
+        }
+
+        composable<PlacesRoute> { backStackEntry ->
+            val route = backStackEntry.toRoute<PlacesRoute>()
+            PlacesScreen(
+                onBack = { navController.popBackStack() },
+                onAddPlace = {
+                    navController.navigate(PlaceEditorRoute(route.circleId))
+                },
+                onEditPlace = { placeId ->
+                    navController.navigate(
+                        PlaceEditorRoute(route.circleId, placeId),
+                    )
+                },
+            )
+        }
+
+        composable<PlaceEditorRoute> {
+            PlaceEditorScreen(
+                onBack = { navController.popBackStack() },
+                onSaved = { navController.popBackStack() },
             )
         }
 

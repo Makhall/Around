@@ -4,6 +4,7 @@ import com.around.app.data.model.Circle
 import com.around.app.data.model.CircleError
 import com.around.app.data.model.CircleMember
 import com.around.app.data.model.MemberLocation
+import com.around.app.data.model.Place
 
 data class MapMember(
     val member: CircleMember,
@@ -14,6 +15,7 @@ data class CircleMapUiState(
     val loading: Boolean = true,
     val circle: Circle? = null,
     val members: List<MapMember> = emptyList(),
+    val places: List<Place> = emptyList(),
     val currentUid: String? = null,
     val mapStyleUrl: String = DEFAULT_MAP_STYLE_URL,
     val sharingAllowed: Boolean = true,

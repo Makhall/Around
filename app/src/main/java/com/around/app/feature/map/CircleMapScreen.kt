@@ -25,6 +25,7 @@ import androidx.compose.material.icons.outlined.Directions
 import androidx.compose.material.icons.outlined.History
 import androidx.compose.material.icons.outlined.LocationOn
 import androidx.compose.material.icons.outlined.MyLocation
+import androidx.compose.material.icons.outlined.Place
 import androidx.compose.material.icons.outlined.Schedule
 import androidx.compose.material.icons.outlined.SignalCellularAlt
 import androidx.compose.material3.AlertDialog
@@ -75,6 +76,8 @@ import com.around.app.core.permissions.openBatteryOptimizationSettings
 import com.around.app.core.permissions.rememberPermissionState
 import com.around.app.core.ui.userMessage
 import com.around.app.data.model.MemberRole
+import com.around.app.data.model.Place
+import com.around.app.data.model.placeAt
 import com.around.app.service.SharingRuntime
 import com.around.app.service.SharingServiceCommands
 import com.around.app.service.SharingStatus
@@ -177,6 +180,7 @@ fun CircleMapScreen(
         ) {
             MemberMap(
                 members = uiState.members,
+                places = uiState.places,
                 currentUid = uiState.currentUid,
                 selectedUid = selectedUid,
                 styleUrl = uiState.mapStyleUrl,
@@ -351,6 +355,7 @@ fun CircleMapScreen(
             MemberSheet(
                 member = member,
                 currentUid = uiState.currentUid,
+                places = uiState.places,
                 now = now,
                 onCenter = {
                     val location = member.location
@@ -559,6 +564,7 @@ private fun PermissionBanner(
 private fun MemberSheet(
     member: MapMember,
     currentUid: String?,
+    places: List<Place>,
     now: Long,
     onCenter: () -> Unit,
 ) {
@@ -641,6 +647,13 @@ private fun MemberSheet(
                 icon = { Icon(Icons.Outlined.Schedule, contentDescription = null) },
                 label = stringResource(R.string.map_last_updated, lastSeen),
             )
+            places.placeAt(location.latitude, location.longitude)?.let { place ->
+                Spacer(Modifier.height(8.dp))
+                DetailRow(
+                    icon = { Icon(Icons.Outlined.Place, contentDescription = null) },
+                    label = stringResource(R.string.map_at_place, place.name),
+                )
+            }
             location.batteryPercent?.let { battery ->
                 Spacer(Modifier.height(8.dp))
                 DetailRow(

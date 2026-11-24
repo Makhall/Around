@@ -30,4 +30,13 @@ data class CircleMapRoute(val circleId: String)
 data class HistoryRoute(val circleId: String)
 
 @Serializable
+data class PlacesRoute(val circleId: String)
+
+@Serializable
+data class PlaceEditorRoute(
+    val circleId: String,
+    val placeId: String = "",
+)
+
+@Serializable
 data object PermissionRoute

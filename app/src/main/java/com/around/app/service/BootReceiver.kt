@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.util.Log
 import androidx.core.content.ContextCompat
+import com.around.app.core.geofence.PlaceGeofenceRegistrar
 import com.around.app.data.sharing.SharingPreferences
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -19,6 +20,9 @@ class BootReceiver : BroadcastReceiver() {
     @Inject
     lateinit var preferences: SharingPreferences
 
+    @Inject
+    lateinit var geofenceRegistrar: PlaceGeofenceRegistrar
+
     override fun onReceive(context: Context, intent: Intent) {
         if (intent.action != Intent.ACTION_BOOT_COMPLETED &&
             intent.action != Intent.ACTION_MY_PACKAGE_REPLACED
@@ -29,6 +33,7 @@ class BootReceiver : BroadcastReceiver() {
         val pendingResult = goAsync()
         CoroutineScope(SupervisorJob() + Dispatchers.IO).launch {
             try {
+                geofenceRegistrar.refresh()
                 val snapshot = preferences.snapshot()
                 if (!snapshot.enabled) {
                     return@launch

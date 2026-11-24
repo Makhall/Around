@@ -124,6 +124,7 @@ export async function createCircle(
     joinedAt: FieldValue.serverTimestamp(),
     sharing: false,
     historyEnabled: true,
+    placeAlerts: true,
     allowRing: true,
   };
 
@@ -282,6 +283,7 @@ export async function joinCircle(
       joinedAt: FieldValue.serverTimestamp(),
       sharing: false,
       historyEnabled: true,
+      placeAlerts: true,
       allowRing: true,
     });
 

@@ -286,6 +286,82 @@ test("creating a Circle without a profile is rejected", async () => {
   );
 });
 
+test("placeEvent creates one alert event per dedupe window", async () => {
+  const alice = await createUser("Alice");
+  const bob = await createUser("Bob");
+  const created = await createCircle(alice, "Place Test");
+  await callApi(bob, "joinCircle", { code: created.inviteCode });
+
+  await setDoc(
+    doc(alice.db, "circles", created.circleId, "places", "home"),
+    {
+      name: "Home",
+      lat: 1,
+      lng: 2,
+      radiusM: 150,
+      createdBy: alice.uid,
+      createdAt: serverTimestamp(),
+    },
+  );
+
+  const first = await callApi(alice, "placeEvent", {
+    circleId: created.circleId,
+    placeId: "home",
+    type: "arrive",
+  });
+  assert.equal(first.ok, true);
+  assert.equal(first.deduped, false);
+
+  const duplicate = await callApi(alice, "placeEvent", {
+    circleId: created.circleId,
+    placeId: "home",
+    type: "arrive",
+  });
+  assert.equal(duplicate.deduped, true);
+
+  const events = await getDocs(
+    collection(alice.db, "circles", created.circleId, "events"),
+  );
+  assert.equal(events.size, 1);
+  assert.equal(events.docs[0].get("type"), "arrive");
+});
+
+test("placeEvent rejects non-members and unknown places", async () => {
+  const alice = await createUser("Alice");
+  const carol = await createUser("Carol");
+  const created = await createCircle(alice, "Private Places");
+
+  await setDoc(
+    doc(alice.db, "circles", created.circleId, "places", "home"),
+    {
+      name: "Home",
+      lat: 1,
+      lng: 2,
+      radiusM: 150,
+      createdBy: alice.uid,
+      createdAt: serverTimestamp(),
+    },
+  );
+
+  await expectError(
+    callApi(carol, "placeEvent", {
+      circleId: created.circleId,
+      placeId: "home",
+      type: "arrive",
+    }),
+    "not_found",
+  );
+
+  await expectError(
+    callApi(alice, "placeEvent", {
+      circleId: created.circleId,
+      placeId: "missing",
+      type: "leave",
+    }),
+    "not_found",
+  );
+});
+
 test("pruneHistory removes expired points and keeps recent points", async () => {
   const alice = await createUser("Alice");
   const created = await createCircle(alice, "History Test");

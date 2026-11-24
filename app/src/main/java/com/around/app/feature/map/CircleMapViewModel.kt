@@ -12,6 +12,7 @@ import com.around.app.data.config.AppConfigRepository
 import com.around.app.data.location.LocationRepository
 import com.around.app.data.model.CircleError
 import com.around.app.data.model.toCircleError
+import com.around.app.data.places.PlaceRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.Job
@@ -29,6 +30,7 @@ class CircleMapViewModel @Inject constructor(
     authRepository: AuthRepository,
     private val circleRepository: CircleRepository,
     private val locationRepository: LocationRepository,
+    private val placeRepository: PlaceRepository,
     private val configRepository: AppConfigRepository,
 ) : ViewModel() {
 
@@ -66,8 +68,9 @@ class CircleMapViewModel @Inject constructor(
                 circleRepository.observeCircle(circleId),
                 circleRepository.observeMembers(circleId),
                 locationRepository.observeLocations(circleId),
-            ) { circle, members, locations ->
-                Triple(circle, members, locations)
+                placeRepository.observePlaces(circleId),
+            ) { circle, members, locations, places ->
+                MapData(circle, members, locations, places)
             }
                 .catch { throwable ->
                     Log.w(TAG, "Map listeners failed", throwable)
@@ -75,10 +78,13 @@ class CircleMapViewModel @Inject constructor(
                         it.copy(loading = false, error = CircleError.NETWORK)
                     }
                 }
-                .collect { (circle, members, locations) ->
-                    val mapped = members
+                .collect { data ->
+                    val mapped = data.members
                         .map { member ->
-                            MapMember(member = member, location = locations[member.uid])
+                            MapMember(
+                                member = member,
+                                location = data.locations[member.uid],
+                            )
                         }
                         .sortedWith(
                             compareBy(
@@ -89,10 +95,11 @@ class CircleMapViewModel @Inject constructor(
                     _uiState.update {
                         it.copy(
                             loading = false,
-                            circle = circle,
+                            circle = data.circle,
                             members = mapped,
+                            places = data.places,
                             currentUid = currentUid,
-                            removedFromCircle = circle == null,
+                            removedFromCircle = data.circle == null,
                         )
                     }
                 }
@@ -145,6 +152,13 @@ class CircleMapViewModel @Inject constructor(
     override fun onCleared() {
         stop()
     }
+
+    private data class MapData(
+        val circle: com.around.app.data.model.Circle?,
+        val members: List<com.around.app.data.model.CircleMember>,
+        val locations: Map<String, com.around.app.data.model.MemberLocation>,
+        val places: List<com.around.app.data.model.Place>,
+    )
 
     private companion object {
         const val TAG = "CircleMapViewModel"

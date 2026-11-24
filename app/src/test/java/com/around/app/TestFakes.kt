@@ -15,11 +15,14 @@ import com.around.app.data.model.InviteCode
 import com.around.app.data.model.JoinedCircle
 import com.around.app.data.model.LocationPayload
 import com.around.app.data.model.MemberLocation
+import com.around.app.data.model.Place
 import com.around.app.data.model.UserProfile
 import com.around.app.data.model.UserSettings
+import com.around.app.data.places.PlaceRepository
 import com.around.app.data.user.UserRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onStart
@@ -80,6 +83,7 @@ class FakeCircleRepository(
     var removeResult: Result<Unit> = Result.success(Unit),
     var sharingResult: Result<Unit> = Result.success(Unit),
     var historyResult: Result<Unit> = Result.success(Unit),
+    var placeAlertsResult: Result<Unit> = Result.success(Unit),
     var circlesFlow: Flow<List<Circle>> = flowOf(emptyList()),
     var circleFlow: Flow<Circle?> = flowOf<Circle?>(null),
     var membersFlow: Flow<List<CircleMember>> = flowOf(emptyList()),
@@ -89,6 +93,8 @@ class FakeCircleRepository(
     var lastCreatedName: String? = null
 
     override fun observeCircles(uid: String): Flow<List<Circle>> = circlesFlow
+
+    override suspend fun getCircles(uid: String): List<Circle> = circlesFlow.first()
 
     override fun observeCircle(circleId: String): Flow<Circle?> = circleFlow
 
@@ -123,6 +129,7 @@ class FakeCircleRepository(
 
     var lastSharing: Triple<String, String, Boolean>? = null
     var lastHistorySetting: Triple<String, String, Boolean>? = null
+    var lastPlaceAlertsSetting: Triple<String, String, Boolean>? = null
 
     override suspend fun setHistoryEnabled(
         circleId: String,
@@ -131,6 +138,15 @@ class FakeCircleRepository(
     ): Result<Unit> {
         lastHistorySetting = Triple(circleId, uid, enabled)
         return historyResult
+    }
+
+    override suspend fun setPlaceAlerts(
+        circleId: String,
+        uid: String,
+        enabled: Boolean,
+    ): Result<Unit> {
+        lastPlaceAlertsSetting = Triple(circleId, uid, enabled)
+        return placeAlertsResult
     }
 }
 
@@ -165,6 +181,50 @@ class FakeLocationRepository(
         locations
             .onStart { observerCount += 1 }
             .onCompletion { observerCount -= 1 }
+}
+
+class FakePlaceRepository(
+    places: List<Place> = emptyList(),
+) : PlaceRepository {
+
+    val placesFlow = MutableStateFlow(places)
+    val saved = mutableListOf<Place>()
+    val deleted = mutableListOf<String>()
+
+    override fun observePlaces(circleId: String): Flow<List<Place>> = placesFlow
+
+    override suspend fun getPlaces(circleId: String): List<Place> = placesFlow.value
+
+    override suspend fun getPlace(circleId: String, placeId: String): Place? =
+        placesFlow.value.firstOrNull { it.id == placeId }
+
+    override suspend fun savePlace(
+        circleId: String,
+        uid: String,
+        placeId: String?,
+        name: String,
+        latitude: Double,
+        longitude: Double,
+        radiusMeters: Int,
+    ): Result<Place> {
+        val place = Place(
+            id = placeId ?: "place-${saved.size + 1}",
+            circleId = circleId,
+            name = name,
+            latitude = latitude,
+            longitude = longitude,
+            radiusMeters = radiusMeters,
+            createdBy = uid,
+            createdAt = System.currentTimeMillis(),
+        )
+        saved += place
+        return Result.success(place)
+    }
+
+    override suspend fun deletePlace(circleId: String, placeId: String): Result<Unit> {
+        deleted += placeId
+        return Result.success(Unit)
+    }
 }
 
 class FakeHistoryRepository(

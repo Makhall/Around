@@ -104,11 +104,20 @@
     <string name="circle_detail_history_body">Lihat pergerakan 24 jam terakhir di peta.</string>
     <string name="circle_detail_history_save">Simpan riwayat</string>
     <string name="circle_detail_history_save_body">Simpan titik rute hingga 24 jam untuk Circle ini. Mematikan ini menghapus riwayat tersimpan Circle ini.</string>
+    <string name="circle_detail_places_title">Tempat</string>
+    <string name="circle_detail_places_body">Dapatkan peringatan saat anggota tiba atau pergi.</string>
+    <string name="circle_detail_place_alerts">Peringatan tempat</string>
+    <string name="circle_detail_place_alerts_body">Terima peringatan saat anggota tiba di atau meninggalkan tempat di Circle ini.</string>
     <string name="circle_detail_sharing_title">Berbagi lokasi</string>
     <string name="circle_detail_sharing_body">Bagikan lokasiku di Circle ini saat berbagi aktif.</string>
 
     <string name="sharing_notification_channel_name">Status berbagi</string>
     <string name="sharing_notification_channel_description">Tampil saat Around membagikan lokasimu.</string>
+    <string name="place_alert_channel_name">Peringatan tempat</string>
+    <string name="place_alert_channel_description">Kedatangan dan kepergian dari tempat di Circle.</string>
+    <string name="place_alert_title">Peringatan tempat</string>
+    <string name="place_alert_arrive">%1$s tiba di %2$s</string>
+    <string name="place_alert_leave">%1$s meninggalkan %2$s</string>
     <string name="sharing_notification_title">Membagikan lokasimu</string>
     <string name="sharing_notification_preparing">Berbagi lokasi sedang dimulai…</string>
     <string name="sharing_notification_no_circles">Tidak ada Circle yang mengaktifkan berbagi lokasi.</string>
@@ -182,6 +191,35 @@
     <string name="history_timeline_empty">Tidak ada titik di rentang ini.</string>
     <string name="history_latest">Terbaru</string>
     <string name="history_start">Awal</string>
+
+    <string name="places_title">Tempat</string>
+    <string name="places_add">Tambah tempat</string>
+    <string name="places_empty_title">Belum ada tempat</string>
+    <string name="places_empty_body">Tambahkan tempat untuk mendapat peringatan kedatangan dan kepergian.</string>
+    <string name="places_radius">Radius %1$d m</string>
+    <string name="places_edit">Ubah</string>
+    <string name="places_delete">Hapus</string>
+    <string name="places_delete_title">Hapus %1$s?</string>
+    <string name="places_delete_body">Peringatan untuk tempat ini akan berhenti.</string>
+    <string name="places_loading">Memuat tempat…</string>
+    <string name="places_error">Gagal memuat tempat.</string>
+    <string name="place_editor_new_title">Tambah tempat</string>
+    <string name="place_editor_edit_title">Ubah tempat</string>
+    <string name="place_name_label">Nama tempat</string>
+    <string name="place_radius_label">Radius</string>
+    <string name="place_radius_value">%1$d m</string>
+    <string name="place_pick_hint">Ketuk peta untuk memilih lokasi.</string>
+    <string name="place_map_content_description">Peta untuk memilih tempat</string>
+    <string name="place_save">Simpan tempat</string>
+    <string name="place_saving">Menyimpan…</string>
+    <string name="place_loading">Memuat tempat…</string>
+    <string name="place_error_name">Masukkan nama tempat.</string>
+    <string name="place_error_radius">Radius harus antara 100 m dan 1000 m.</string>
+    <string name="place_error_location">Ketuk peta untuk memilih lokasi.</string>
+    <string name="place_error_too_many">Circle ini sudah memiliki 20 tempat.</string>
+    <string name="place_error_save">Gagal menyimpan tempat.</string>
+    <string name="place_error_delete">Gagal menghapus tempat.</string>
+    <string name="map_at_place">Di %1$s</string>
 
     <string name="permission_title">Aktifkan lokasi langsung</string>
     <string name="permission_body">Around membagikan lokasimu ke Circle hanya saat kamu memilih. Notifikasi tetap selalu ditampilkan.</string>

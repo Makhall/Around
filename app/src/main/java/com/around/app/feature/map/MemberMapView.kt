@@ -3,13 +3,16 @@ package com.around.app.feature.map
 import android.os.Bundle
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -35,6 +38,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
@@ -45,6 +49,7 @@ import com.around.app.R
 import com.around.app.core.designsystem.components.AvatarBadge
 import com.around.app.data.model.MemberLocation
 import com.around.app.data.model.MemberLocation.Companion.STALE_THRESHOLD_MS
+import com.around.app.data.model.Place
 import kotlin.math.roundToInt
 import org.maplibre.android.camera.CameraPosition
 import org.maplibre.android.camera.CameraUpdateFactory
@@ -59,9 +64,16 @@ private data class MarkerPosition(
     val screen: Offset,
 )
 
+private data class PlacePosition(
+    val place: Place,
+    val center: Offset,
+    val radiusPx: Float,
+)
+
 @Composable
 fun MemberMap(
     members: List<MapMember>,
+    places: List<Place>,
     currentUid: String?,
     selectedUid: String?,
     styleUrl: String,
@@ -213,6 +225,80 @@ fun MemberMap(
                     { it.member.member.uid == selectedUid },
                 ),
             )
+
+            val placePositions = remember(places, cameraTick, mapSize, map) {
+                val readyMap = map ?: return@remember emptyList()
+                places.mapNotNull { place ->
+                    if (!place.latitude.isFinite() || !place.longitude.isFinite()) {
+                        return@mapNotNull null
+                    }
+                    val screen = runCatching {
+                        readyMap.projection.toScreenLocation(
+                            LatLng(place.latitude, place.longitude),
+                        )
+                    }.getOrNull() ?: return@mapNotNull null
+                    val metersPerPixel = runCatching {
+                        readyMap.projection.getMetersPerPixelAtLatitude(place.latitude)
+                    }.getOrDefault(1.0)
+                    PlacePosition(
+                        place = place,
+                        center = Offset(screen.x, screen.y),
+                        radiusPx = (place.radiusMeters / metersPerPixel).toFloat(),
+                    )
+                }
+            }
+
+            if (placePositions.isNotEmpty()) {
+                val placeColor = MaterialTheme.colorScheme.primary
+                Canvas(modifier = Modifier.fillMaxSize()) {
+                    placePositions.forEach { place ->
+                        drawCircle(
+                            color = placeColor.copy(alpha = 0.08f),
+                            radius = place.radiusPx,
+                            center = place.center,
+                        )
+                        drawCircle(
+                            color = placeColor.copy(alpha = 0.45f),
+                            radius = place.radiusPx,
+                            center = place.center,
+                            style = androidx.compose.ui.graphics.drawscope.Stroke(
+                                width = 1.5.dp.toPx(),
+                            ),
+                        )
+                    }
+                }
+
+                placePositions.forEach { place ->
+                    Box(
+                        modifier = Modifier
+                            .offset {
+                                IntOffset(
+                                    (place.center.x - 60.dp.toPx()).roundToInt(),
+                                    (place.center.y - 44.dp.toPx()).roundToInt(),
+                                )
+                            }
+                            .width(120.dp),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Surface(
+                            shape = RoundedCornerShape(50),
+                            color = MaterialTheme.colorScheme.surface.copy(alpha = 0.92f),
+                            tonalElevation = 2.dp,
+                        ) {
+                            Text(
+                                text = place.place.name,
+                                style = MaterialTheme.typography.labelSmall,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                                modifier = Modifier.padding(
+                                    horizontal = 10.dp,
+                                    vertical = 4.dp,
+                                ),
+                            )
+                        }
+                    }
+                }
+            }
 
             ordered.forEach { position ->
                 val uid = position.member.member.uid

@@ -1,5 +1,8 @@
 export const MAX_CIRCLES_PER_USER = 3;
 export const MAX_MEMBERS_PER_CIRCLE = 20;
+export const MAX_PLACES_PER_CIRCLE = 20;
+export const MIN_PLACE_RADIUS_M = 100;
+export const PLACE_ALERT_DEDUPE_WINDOW_MS = 5 * 60 * 1000;
 
 export const INVITE_CODE_LENGTH = 8;
 export const INVITE_CODE_TTL_MS = 24 * 60 * 60 * 1000;

@@ -67,6 +67,10 @@ Do **not** set `FIRESTORE_EMULATOR_HOST`, `FIREBASE_AUTH_EMULATOR_HOST`, or `FIR
 
 `backend/vercel.json` schedules `GET /api/cron/pruneHistory` daily at 03:00 UTC. Vercel Hobby permits daily cron jobs; the endpoint refuses to run without the `CRON_SECRET` bearer token.
 
+### Place alerts
+
+`POST /api/placeEvent` is authenticated with the caller's Firebase ID token. It validates Circle membership and the place, writes a server-only event document, and sends FCM data messages to the other members' registered devices. The endpoint uses the same service account as the rest of the relay, so no extra Vercel environment variable is needed. In the emulator suite the FCM send is skipped automatically.
+
 ## 3. Deploy
 
 ```powershell

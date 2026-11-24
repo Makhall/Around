@@ -81,6 +81,19 @@ class AroundApi @Inject constructor(
             },
         ).map { }
 
+    suspend fun sendPlaceEvent(
+        circleId: String,
+        placeId: String,
+        type: String,
+    ): Result<Unit> = post(
+        "placeEvent",
+        buildJsonObject {
+            put("circleId", circleId)
+            put("placeId", placeId)
+            put("type", type)
+        },
+    ).map { }
+
     private suspend fun post(
         path: String,
         body: JsonObject,

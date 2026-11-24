@@ -64,6 +64,7 @@ data class CircleMember(
     val sharing: Boolean,
     val allowRing: Boolean,
     val historyEnabled: Boolean = true,
+    val placeAlerts: Boolean = true,
 )
 
 data class CreatedCircle(

@@ -6,10 +6,16 @@ import com.around.app.data.circles.CircleRepository
 import com.around.app.data.circles.FirebaseCircleRepository
 import com.around.app.data.config.AppConfigRepository
 import com.around.app.data.config.FirebaseRemoteConfigRepository
+import com.around.app.data.devices.DeviceRepository
+import com.around.app.data.devices.FirebaseDeviceRepository
 import com.around.app.data.history.HistoryRepository
 import com.around.app.data.history.RealtimeHistoryRepository
 import com.around.app.data.location.LocationRepository
 import com.around.app.data.location.RealtimeLocationRepository
+import com.around.app.data.places.ApiPlaceEventRepository
+import com.around.app.data.places.FirebasePlaceRepository
+import com.around.app.data.places.PlaceEventRepository
+import com.around.app.data.places.PlaceRepository
 import com.around.app.data.user.FirebaseUserRepository
 import com.around.app.data.user.UserRepository
 import dagger.Binds
@@ -43,6 +49,24 @@ abstract class RepositoryModule {
     abstract fun bindHistoryRepository(
         impl: RealtimeHistoryRepository,
     ): HistoryRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindPlaceRepository(
+        impl: FirebasePlaceRepository,
+    ): PlaceRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindPlaceEventRepository(
+        impl: ApiPlaceEventRepository,
+    ): PlaceEventRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindDeviceRepository(
+        impl: FirebaseDeviceRepository,
+    ): DeviceRepository
 
     @Binds
     @Singleton
