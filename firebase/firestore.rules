@@ -58,11 +58,13 @@ service cloud.firestore {
           currentUid() == memberUid &&
           isMember(circleId) &&
           request.resource.data.diff(resource.data).affectedKeys()
-            .hasOnly(['displayName', 'avatar', 'sharing', 'allowRing']) &&
+            .hasOnly(['displayName', 'avatar', 'sharing', 'historyEnabled', 'allowRing']) &&
           validDisplayName(request.resource.data.displayName) &&
           validAvatar(request.resource.data.avatar) &&
           (!('sharing' in request.resource.data.diff(resource.data).affectedKeys()) ||
             request.resource.data.sharing is bool) &&
+          (!('historyEnabled' in request.resource.data.diff(resource.data).affectedKeys()) ||
+            request.resource.data.historyEnabled is bool) &&
           (!('allowRing' in request.resource.data.diff(resource.data).affectedKeys()) ||
             request.resource.data.allowRing is bool);
         allow create, delete: if false;

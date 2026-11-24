@@ -120,6 +120,19 @@ class FirebaseCircleRepository @Inject constructor(
             .await()
     }
 
+    override suspend fun setHistoryEnabled(
+        circleId: String,
+        uid: String,
+        enabled: Boolean,
+    ): Result<Unit> = runCatching {
+        firestore.collection("circles")
+            .document(circleId)
+            .collection("members")
+            .document(uid)
+            .update("historyEnabled", enabled)
+            .await()
+    }
+
     private fun DocumentSnapshot.toCircle(): Circle? {
         if (!exists()) {
             return null
@@ -151,6 +164,7 @@ class FirebaseCircleRepository @Inject constructor(
             joinedAt = getTimestamp("joinedAt")?.toDate()?.time ?: 0L,
             sharing = getBoolean("sharing") ?: false,
             allowRing = getBoolean("allowRing") ?: true,
+            historyEnabled = getBoolean("historyEnabled") ?: true,
         )
     }
 }

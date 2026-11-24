@@ -26,7 +26,10 @@ import com.around.app.core.permissions.notificationsEnabled
 import com.around.app.data.auth.AuthRepository
 import com.around.app.data.circles.CircleRepository
 import com.around.app.data.config.AppConfigRepository
+import com.around.app.data.history.HistoryRepository
+import com.around.app.data.history.shouldSampleHistory
 import com.around.app.data.location.LocationRepository
+import com.around.app.data.model.HistoryPoint
 import com.around.app.data.model.LocationPayload
 import com.around.app.data.sharing.SharingPreferences
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -68,6 +71,9 @@ class LocationForegroundService : Service() {
     lateinit var locationRepository: LocationRepository
 
     @Inject
+    lateinit var historyRepository: HistoryRepository
+
+    @Inject
     lateinit var preferences: SharingPreferences
 
     @Inject
@@ -84,7 +90,14 @@ class LocationForegroundService : Service() {
     private var targetCircles: Set<String> = emptySet()
 
     @Volatile
+    private var historyCircles: Set<String> = emptySet()
+
+    @Volatile
     private var allCircleIds: Set<String> = emptySet()
+
+    private var lastHistoryAt = 0L
+    private var lastHistoryLatitude = 0.0
+    private var lastHistoryLongitude = 0.0
 
     @Volatile
     private var stopping = false
@@ -184,6 +197,7 @@ class LocationForegroundService : Service() {
 
         stopping = false
         stopGeneration += 1
+        lastHistoryAt = 0L
         currentStatus = SharingStatus.Running(System.currentTimeMillis())
         SharingRuntime.set(currentStatus)
         serviceScope.launch {
@@ -324,31 +338,46 @@ class LocationForegroundService : Service() {
         val uid = authRepository.currentUid ?: return
 
         sharingJob = serviceScope.launch {
-            observeSharingCircles(uid).collect { circles ->
-                targetCircles = circles
+            observeSharingCircles(uid).collect { targets ->
+                targetCircles = targets.live
+                val hadHistoryCircles = historyCircles.isNotEmpty()
+                historyCircles = targets.history
+                if (!hadHistoryCircles && historyCircles.isNotEmpty()) {
+                    lastHistoryAt = 0L
+                }
                 updateNotification()
             }
         }
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    private fun observeSharingCircles(uid: String): Flow<Set<String>> =
+    private fun observeSharingCircles(uid: String): Flow<SharingTargets> =
         circleRepository.observeCircles(uid).flatMapLatest { circles ->
             allCircleIds = circles.map { it.id }.toSet()
             if (circles.isEmpty()) {
-                flowOf(emptySet())
+                flowOf(SharingTargets())
             } else {
                 val flows = circles.map { circle ->
                     circleRepository.observeMembers(circle.id)
                         .map { members ->
-                            circle.id.takeIf { memberList ->
-                                members.any { it.uid == uid && it.sharing }
+                            val me = members.firstOrNull { it.uid == uid }
+                            if (me?.sharing == true) {
+                                CircleTarget(circle.id, me.historyEnabled)
+                            } else {
+                                null
                             }
                         }
                         .catch { emit(null) }
                 }
-                combine(flows) { enabled ->
-                    enabled.filterNotNull().toSet()
+                combine(flows) { targets ->
+                    val active = targets.filterNotNull()
+                    SharingTargets(
+                        live = active.map { it.circleId }.toSet(),
+                        history = active
+                            .filter { it.history }
+                            .map { it.circleId }
+                            .toSet(),
+                    )
                 }
             }
         }
@@ -382,16 +411,13 @@ class LocationForegroundService : Service() {
                 Priority.PRIORITY_HIGH_ACCURACY,
                 MOVING_INTERVAL_MS,
             )
-                .setMinUpdateDistanceMeters(MOVING_DISTANCE_METERS)
                 .setMaxUpdateDelayMillis(MOVING_INTERVAL_MS * 2)
                 .build()
         } else {
             LocationRequest.Builder(
                 Priority.PRIORITY_BALANCED_POWER_ACCURACY,
                 STATIONARY_INTERVAL_MS,
-            )
-                .setMinUpdateDistanceMeters(STATIONARY_DISTANCE_METERS)
-                .build()
+            ).build()
         }
 
         try {
@@ -438,11 +464,51 @@ class LocationForegroundService : Service() {
             fixTime = location.time.takeIf { it > 0L } ?: now,
         )
 
+        val historyTargets = historyCircles
+        val historyPoint = if (
+            historyTargets.isNotEmpty() &&
+            shouldSampleHistory(
+                lastTimestamp = lastHistoryAt,
+                lastLatitude = lastHistoryLatitude,
+                lastLongitude = lastHistoryLongitude,
+                now = now,
+                latitude = location.latitude,
+                longitude = location.longitude,
+            )
+        ) {
+            lastHistoryAt = now
+            lastHistoryLatitude = location.latitude
+            lastHistoryLongitude = location.longitude
+            HistoryPoint(
+                uid = uid,
+                latitude = location.latitude,
+                longitude = location.longitude,
+                accuracyMeters = payload.accuracyMeters,
+                timestamp = payload.fixTime,
+            )
+        } else {
+            null
+        }
+
         serviceScope.launch {
             locationRepository.writeLocation(circles, uid, payload)
                 .onFailure { Log.w(TAG, "Failed to write location", it) }
+            historyPoint?.let { point ->
+                historyRepository.appendHistory(historyTargets, uid, point)
+                    .onFailure { Log.w(TAG, "Failed to write history", it) }
+            }
         }
     }
+
+    private data class CircleTarget(
+        val circleId: String,
+        val history: Boolean,
+    )
+
+    private data class SharingTargets(
+        val live: Set<String> = emptySet(),
+        val history: Set<String> = emptySet(),
+    )
 
     private fun batteryState(): Pair<Int?, Boolean?> {
         val manager = getSystemService(BATTERY_SERVICE) as? BatteryManager
@@ -609,8 +675,6 @@ class LocationForegroundService : Service() {
         private const val ONE_HOUR_MS = 60 * 60 * 1000L
         private const val MOVING_INTERVAL_MS = 10_000L
         private const val STATIONARY_INTERVAL_MS = 5 * 60 * 1000L
-        private const val MOVING_DISTANCE_METERS = 15f
-        private const val STATIONARY_DISTANCE_METERS = 50f
         private const val STATIONARY_AFTER_MS = 2 * 60 * 1000L
     }
 }

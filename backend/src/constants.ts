@@ -11,3 +11,6 @@ export const JOIN_MAX_FAILURES = 10;
 
 export const MAX_DISPLAY_NAME_LENGTH = 30;
 export const MAX_CIRCLE_NAME_LENGTH = 40;
+
+export const HISTORY_RETENTION_MS = 24 * 60 * 60 * 1000;
+export const HISTORY_MAX_POINTS_PER_MEMBER = 2_000;

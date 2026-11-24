@@ -100,6 +100,10 @@
     <string name="circle_detail_map">Peta</string>
     <string name="circle_detail_map_body">Lihat lokasi terbaru semua anggota di peta langsung.</string>
     <string name="circle_detail_open_map">Buka peta langsung</string>
+    <string name="circle_detail_history_title">Riwayat</string>
+    <string name="circle_detail_history_body">Lihat pergerakan 24 jam terakhir di peta.</string>
+    <string name="circle_detail_history_save">Simpan riwayat</string>
+    <string name="circle_detail_history_save_body">Simpan titik rute hingga 24 jam untuk Circle ini. Mematikan ini menghapus riwayat tersimpan Circle ini.</string>
     <string name="circle_detail_sharing_title">Berbagi lokasi</string>
     <string name="circle_detail_sharing_body">Bagikan lokasiku di Circle ini saat berbagi aktif.</string>
 
@@ -139,13 +143,12 @@
     <string name="map_battery">Baterai %1$d%%</string>
     <string name="map_charging">Mengisi daya</string>
     <string name="map_accuracy">±%1$d m</string>
-    <string name="map_last_updated">Terakhir diperbarui %1$s</string>
+    <string name="map_last_updated">Terakhir terlihat %1$s</string>
     <string name="map_just_now">baru saja</string>
     <string name="map_seconds_ago">%1$d dtk lalu</string>
     <string name="map_minutes_ago">%1$d mnt lalu</string>
     <string name="map_hours_ago">%1$d jam lalu</string>
     <string name="map_days_ago">%1$d hari lalu</string>
-    <string name="map_stale">Usang · terakhir terlihat %1$s</string>
     <string name="map_stale_chip">Usang</string>
     <string name="map_battery_title">Jaga berbagi tetap andal</string>
     <string name="map_battery_body">Beberapa produsen ponsel menghentikan aplikasi latar belakang secara agresif. Izinkan Around berjalan di latar belakang dan nonaktifkan optimasi baterai untuknya.</string>
@@ -159,11 +162,26 @@
     <string name="map_notifications_needed">Izinkan notifikasi agar kontrol berbagi tetap terlihat.</string>
     <string name="map_permission_action">Atur</string>
     <string name="map_content_description">Peta anggota Circle</string>
-    <string name="map_marker_content_description">%1$s, terakhir diperbarui %2$s</string>
+    <string name="map_marker_content_description">%1$s, terakhir terlihat %2$s</string>
     <string name="map_member_details">Buka detail anggota</string>
     <string name="map_center_on_me">Pusatkan ke lokasiku</string>
     <string name="map_center_on_member">Pusatkan ke %1$s</string>
     <string name="map_member_not_sharing">Tidak membagikan lokasi</string>
+    <string name="map_directions">Rute</string>
+
+    <string name="history_open">Buka riwayat</string>
+    <string name="history_title">Riwayat</string>
+    <string name="history_map_content_description">Peta riwayat lokasi</string>
+    <string name="history_end_marker">Posisi terakhir %1$s</string>
+    <string name="history_range_1h">1 jam</string>
+    <string name="history_range_6h">6 jam</string>
+    <string name="history_range_24h">24 jam</string>
+    <string name="history_empty_title">Belum ada riwayat</string>
+    <string name="history_empty_body">Riwayat muncul saat berbagi dan Simpan riwayat aktif.</string>
+    <string name="history_timeline_title">Linimasa</string>
+    <string name="history_timeline_empty">Tidak ada titik di rentang ini.</string>
+    <string name="history_latest">Terbaru</string>
+    <string name="history_start">Awal</string>
 
     <string name="permission_title">Aktifkan lokasi langsung</string>
     <string name="permission_body">Around membagikan lokasimu ke Circle hanya saat kamu memilih. Notifikasi tetap selalu ditampilkan.</string>
@@ -191,5 +209,9 @@
 
     <plurals name="circles_member_count">
         <item quantity="other">%1$d anggota</item>
+    </plurals>
+
+    <plurals name="history_point_count">
+        <item quantity="other">%1$d titik</item>
     </plurals>
 </resources>

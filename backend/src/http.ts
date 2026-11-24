@@ -82,6 +82,48 @@ async function authenticate(request: IncomingMessage): Promise<string> {
   }
 }
 
+export async function handleCron(
+  request: IncomingMessage,
+  response: ServerResponse,
+  handler: () => Promise<Record<string, unknown>>,
+): Promise<void> {
+  if (request.method !== "GET" && request.method !== "POST") {
+    sendJson(response, 405, {
+      error: { code: "invalid_request", message: "Use GET or POST" },
+    });
+    return;
+  }
+
+  const secret = process.env.CRON_SECRET;
+  if (!secret) {
+    sendJson(response, 503, {
+      error: {
+        code: "cron_unconfigured",
+        message: "CRON_SECRET is not configured",
+      },
+    });
+    return;
+  }
+
+  const authorization = request.headers.authorization ?? "";
+  if (authorization !== `Bearer ${secret}`) {
+    sendJson(response, 401, {
+      error: { code: "unauthenticated", message: "Invalid cron secret" },
+    });
+    return;
+  }
+
+  try {
+    const result = await handler();
+    sendJson(response, 200, result);
+  } catch (error) {
+    console.error("Around cron error", error);
+    sendJson(response, 500, {
+      error: { code: "internal", message: "Unexpected server error" },
+    });
+  }
+}
+
 export async function handleJson(
   request: IncomingMessage,
   response: ServerResponse,

@@ -9,6 +9,7 @@ import com.around.app.core.navigation.CircleDetailRoute
 import com.around.app.data.auth.AuthRepository
 import com.around.app.data.circles.CircleRepository
 import com.around.app.data.config.AppConfigRepository
+import com.around.app.data.history.HistoryRepository
 import com.around.app.data.location.LocationRepository
 import com.around.app.data.model.CircleError
 import com.around.app.data.model.toCircleError
@@ -29,6 +30,7 @@ class CircleDetailViewModel @Inject constructor(
     authRepository: AuthRepository,
     private val circleRepository: CircleRepository,
     private val locationRepository: LocationRepository,
+    private val historyRepository: HistoryRepository,
     private val configRepository: AppConfigRepository,
 ) : ViewModel() {
 
@@ -138,6 +140,33 @@ class CircleDetailViewModel @Inject constructor(
                     _uiState.update {
                         it.copy(
                             sharingUpdating = false,
+                            error = throwable.toCircleError(),
+                        )
+                    }
+                },
+            )
+        }
+    }
+
+    fun setHistoryEnabled(enabled: Boolean) {
+        val uid = currentUid ?: return
+        if (_uiState.value.historyUpdating) {
+            return
+        }
+
+        viewModelScope.launch {
+            _uiState.update { it.copy(historyUpdating = true, error = null) }
+            circleRepository.setHistoryEnabled(circleId, uid, enabled).fold(
+                onSuccess = {
+                    if (!enabled) {
+                        historyRepository.clearHistory(circleId, uid)
+                    }
+                    _uiState.update { it.copy(historyUpdating = false) }
+                },
+                onFailure = { throwable ->
+                    _uiState.update {
+                        it.copy(
+                            historyUpdating = false,
                             error = throwable.toCircleError(),
                         )
                     }

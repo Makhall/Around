@@ -4,11 +4,13 @@ import com.around.app.data.auth.AuthRepository
 import com.around.app.data.circles.CircleRepository
 import com.around.app.data.config.AppConfigRepository
 import com.around.app.data.config.RemoteSettings
+import com.around.app.data.history.HistoryRepository
 import com.around.app.data.location.LocationRepository
 import com.around.app.data.model.Avatar
 import com.around.app.data.model.Circle
 import com.around.app.data.model.CircleMember
 import com.around.app.data.model.CreatedCircle
+import com.around.app.data.model.HistoryPoint
 import com.around.app.data.model.InviteCode
 import com.around.app.data.model.JoinedCircle
 import com.around.app.data.model.LocationPayload
@@ -77,6 +79,7 @@ class FakeCircleRepository(
     var leaveResult: Result<Unit> = Result.success(Unit),
     var removeResult: Result<Unit> = Result.success(Unit),
     var sharingResult: Result<Unit> = Result.success(Unit),
+    var historyResult: Result<Unit> = Result.success(Unit),
     var circlesFlow: Flow<List<Circle>> = flowOf(emptyList()),
     var circleFlow: Flow<Circle?> = flowOf<Circle?>(null),
     var membersFlow: Flow<List<CircleMember>> = flowOf(emptyList()),
@@ -119,6 +122,16 @@ class FakeCircleRepository(
     }
 
     var lastSharing: Triple<String, String, Boolean>? = null
+    var lastHistorySetting: Triple<String, String, Boolean>? = null
+
+    override suspend fun setHistoryEnabled(
+        circleId: String,
+        uid: String,
+        enabled: Boolean,
+    ): Result<Unit> {
+        lastHistorySetting = Triple(circleId, uid, enabled)
+        return historyResult
+    }
 }
 
 class FakeLocationRepository(
@@ -152,6 +165,46 @@ class FakeLocationRepository(
         locations
             .onStart { observerCount += 1 }
             .onCompletion { observerCount -= 1 }
+}
+
+class FakeHistoryRepository(
+    private val points: MutableStateFlow<List<HistoryPoint>> = MutableStateFlow(emptyList()),
+) : HistoryRepository {
+
+    val appended = mutableListOf<Pair<Set<String>, HistoryPoint>>()
+    val cleared = mutableListOf<Pair<String, String>>()
+    var observeCount = 0
+        private set
+
+    override fun observeHistory(
+        circleId: String,
+        uid: String,
+        since: Long,
+        limit: Int,
+    ): Flow<List<HistoryPoint>> = points
+        .onStart { observeCount += 1 }
+        .onCompletion { observeCount -= 1 }
+
+    override suspend fun appendHistory(
+        circleIds: Set<String>,
+        uid: String,
+        point: HistoryPoint,
+    ): Result<Unit> {
+        appended += circleIds to point
+        return Result.success(Unit)
+    }
+
+    override suspend fun clearHistory(
+        circleId: String,
+        uid: String,
+    ): Result<Unit> {
+        cleared += circleId to uid
+        return Result.success(Unit)
+    }
+
+    fun setPoints(value: List<HistoryPoint>) {
+        points.value = value
+    }
 }
 
 class FakeConfigRepository(

@@ -9,6 +9,7 @@ import com.around.app.feature.circles.CircleDetailScreen
 import com.around.app.feature.circles.CirclesScreen
 import com.around.app.feature.circles.CreateCircleScreen
 import com.around.app.feature.circles.JoinCircleScreen
+import com.around.app.feature.history.HistoryScreen
 import com.around.app.feature.map.CircleMapScreen
 import com.around.app.feature.permissions.PermissionScreen
 import com.around.app.feature.profile.ProfileScreen
@@ -99,6 +100,9 @@ fun AroundNavHost(
                 onOpenMap = { circleId ->
                     navController.navigate(CircleMapRoute(circleId))
                 },
+                onOpenHistory = { circleId ->
+                    navController.navigate(HistoryRoute(circleId))
+                },
                 onOpenPermissions = {
                     navController.navigate(PermissionRoute)
                 },
@@ -108,9 +112,18 @@ fun AroundNavHost(
         composable<CircleMapRoute> {
             CircleMapScreen(
                 onBack = { navController.popBackStack() },
+                onOpenHistory = { circleId ->
+                    navController.navigate(HistoryRoute(circleId))
+                },
                 onOpenPermissions = {
                     navController.navigate(PermissionRoute)
                 },
+            )
+        }
+
+        composable<HistoryRoute> {
+            HistoryScreen(
+                onBack = { navController.popBackStack() },
             )
         }
 

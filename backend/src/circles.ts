@@ -123,6 +123,7 @@ export async function createCircle(
     role: "owner",
     joinedAt: FieldValue.serverTimestamp(),
     sharing: false,
+    historyEnabled: true,
     allowRing: true,
   };
 
@@ -280,6 +281,7 @@ export async function joinCircle(
       role: "member",
       joinedAt: FieldValue.serverTimestamp(),
       sharing: false,
+      historyEnabled: true,
       allowRing: true,
     });
 

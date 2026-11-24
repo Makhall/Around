@@ -17,6 +17,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
+import androidx.compose.material.icons.outlined.History
 import androidx.compose.material.icons.outlined.Map
 import androidx.compose.material.icons.outlined.PersonRemove
 import androidx.compose.material3.AlertDialog
@@ -70,6 +71,7 @@ fun CircleDetailScreen(
     onBack: () -> Unit,
     onLeft: () -> Unit,
     onOpenMap: (String) -> Unit,
+    onOpenHistory: (String) -> Unit,
     onOpenPermissions: () -> Unit,
     viewModel: CircleDetailViewModel = hiltViewModel(),
 ) {
@@ -95,6 +97,7 @@ fun CircleDetailScreen(
     val isOwner = circle != null && circle.ownerUid == uiState.currentUid
     val currentMember = uiState.members.firstOrNull { it.uid == uiState.currentUid }
     val sharing = currentMember?.sharing == true
+    val historyEnabled = currentMember?.historyEnabled == true
 
     Scaffold(
         topBar = {
@@ -226,6 +229,47 @@ fun CircleDetailScreen(
                 }
             }
 
+            Spacer(Modifier.height(12.dp))
+
+            ElevatedCard(
+                onClick = { onOpenHistory(circle.id) },
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Row(
+                    modifier = Modifier.padding(18.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Surface(
+                        shape = CircleShape,
+                        color = MaterialTheme.colorScheme.tertiaryContainer,
+                        contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
+                    ) {
+                        Icon(
+                            imageVector = Icons.Outlined.History,
+                            contentDescription = null,
+                            modifier = Modifier.padding(10.dp),
+                        )
+                    }
+                    Spacer(Modifier.width(14.dp))
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = stringResource(R.string.circle_detail_history_title),
+                            style = MaterialTheme.typography.titleMedium,
+                        )
+                        Text(
+                            text = stringResource(R.string.circle_detail_history_body),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowRight,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+            }
+
             Spacer(Modifier.height(16.dp))
 
             ElevatedCard(modifier = Modifier.fillMaxWidth()) {
@@ -317,6 +361,30 @@ fun CircleDetailScreen(
                                 Text(stringResource(R.string.circle_detail_open_map))
                             }
                         }
+                    }
+
+                    HorizontalDivider(
+                        modifier = Modifier.padding(top = 12.dp, bottom = 10.dp),
+                        color = MaterialTheme.colorScheme.outlineVariant,
+                    )
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = stringResource(R.string.circle_detail_history_save),
+                                style = MaterialTheme.typography.titleSmall,
+                            )
+                            Text(
+                                text = stringResource(R.string.circle_detail_history_save_body),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        }
+                        Spacer(Modifier.width(12.dp))
+                        Switch(
+                            checked = historyEnabled,
+                            onCheckedChange = viewModel::setHistoryEnabled,
+                            enabled = !uiState.historyUpdating && !uiState.sharingUpdating,
+                        )
                     }
                 }
             }

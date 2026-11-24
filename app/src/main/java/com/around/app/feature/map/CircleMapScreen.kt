@@ -21,6 +21,8 @@ import androidx.compose.material.icons.outlined.BatteryAlert
 import androidx.compose.material.icons.outlined.BatteryFull
 import androidx.compose.material.icons.outlined.Bolt
 import androidx.compose.material.icons.outlined.CenterFocusStrong
+import androidx.compose.material.icons.outlined.Directions
+import androidx.compose.material.icons.outlined.History
 import androidx.compose.material.icons.outlined.LocationOn
 import androidx.compose.material.icons.outlined.MyLocation
 import androidx.compose.material.icons.outlined.Schedule
@@ -39,6 +41,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -86,6 +89,7 @@ import org.maplibre.android.maps.MapLibreMap
 @Composable
 fun CircleMapScreen(
     onBack: () -> Unit,
+    onOpenHistory: (String) -> Unit,
     onOpenPermissions: () -> Unit,
     viewModel: CircleMapViewModel = hiltViewModel(),
 ) {
@@ -142,6 +146,15 @@ fun CircleMapScreen(
                     }
                 },
                 actions = {
+                    val circleId = uiState.circle?.id
+                    if (circleId != null) {
+                        IconButton(onClick = { onOpenHistory(circleId) }) {
+                            Icon(
+                                imageVector = Icons.Outlined.History,
+                                contentDescription = stringResource(R.string.history_open),
+                            )
+                        }
+                    }
                     IconButton(onClick = { showBatteryDialog = true }) {
                         Icon(
                             imageVector = Icons.Outlined.BatteryAlert,
@@ -549,6 +562,7 @@ private fun MemberSheet(
     now: Long,
     onCenter: () -> Unit,
 ) {
+    val context = LocalContext.current
     val location = member.location
     val lastSeen = if (location != null) {
         rememberRelativeTime(location.lastSeen)
@@ -627,16 +641,6 @@ private fun MemberSheet(
                 icon = { Icon(Icons.Outlined.Schedule, contentDescription = null) },
                 label = stringResource(R.string.map_last_updated, lastSeen),
             )
-            if (stale) {
-                Spacer(Modifier.height(8.dp))
-                DetailRow(
-                    icon = { Icon(Icons.Outlined.Schedule, contentDescription = null) },
-                    label = stringResource(
-                        R.string.map_stale,
-                        lastSeen,
-                    ),
-                )
-            }
             location.batteryPercent?.let { battery ->
                 Spacer(Modifier.height(8.dp))
                 DetailRow(
@@ -675,6 +679,25 @@ private fun MemberSheet(
         }
 
         Spacer(Modifier.height(20.dp))
+        OutlinedButton(
+            onClick = {
+                location?.let {
+                    openDirections(
+                        context = context,
+                        latitude = it.latitude,
+                        longitude = it.longitude,
+                        label = member.member.displayName,
+                    )
+                }
+            },
+            enabled = location != null,
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            Icon(Icons.Outlined.Directions, contentDescription = null)
+            Spacer(Modifier.width(8.dp))
+            Text(stringResource(R.string.map_directions))
+        }
+        Spacer(Modifier.height(4.dp))
         TextButton(
             onClick = onCenter,
             enabled = location != null,

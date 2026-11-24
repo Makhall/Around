@@ -160,6 +160,9 @@ test("members can update only their own allowed member fields", async () => {
     updateDoc(doc(db, "circles/c1/members/alice"), { sharing: true }),
   );
   await assertSucceeds(
+    updateDoc(doc(db, "circles/c1/members/alice"), { historyEnabled: false }),
+  );
+  await assertSucceeds(
     updateDoc(doc(db, "circles/c1/members/alice"), {
       displayName: "Alice",
       avatar: { type: "color", value: "#006A6A" },

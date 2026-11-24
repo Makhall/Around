@@ -100,6 +100,10 @@
     <string name="circle_detail_map">Map</string>
     <string name="circle_detail_map_body">See everyone\'s latest location on a live map.</string>
     <string name="circle_detail_open_map">Open live map</string>
+    <string name="circle_detail_history_title">History</string>
+    <string name="circle_detail_history_body">See the last 24 hours of movement on a map.</string>
+    <string name="circle_detail_history_save">Save history</string>
+    <string name="circle_detail_history_save_body">Keep up to 24 hours of route points for this Circle. Turning this off deletes this Circle\'s saved history.</string>
     <string name="circle_detail_sharing_title">Live sharing</string>
     <string name="circle_detail_sharing_body">Share my location in this Circle while sharing is on.</string>
 
@@ -139,13 +143,12 @@
     <string name="map_battery">Battery %1$d%%</string>
     <string name="map_charging">Charging</string>
     <string name="map_accuracy">±%1$d m</string>
-    <string name="map_last_updated">Last updated %1$s</string>
+    <string name="map_last_updated">Last seen %1$s</string>
     <string name="map_just_now">just now</string>
     <string name="map_seconds_ago">%1$d s ago</string>
     <string name="map_minutes_ago">%1$d min ago</string>
     <string name="map_hours_ago">%1$d h ago</string>
     <string name="map_days_ago">%1$d d ago</string>
-    <string name="map_stale">Stale · last seen %1$s</string>
     <string name="map_stale_chip">Stale</string>
     <string name="map_battery_title">Keep sharing reliable</string>
     <string name="map_battery_body">Some phone makers stop background apps aggressively. Allow Around to run in the background and disable battery optimization for it.</string>
@@ -159,11 +162,26 @@
     <string name="map_notifications_needed">Allow notifications so the sharing controls stay visible.</string>
     <string name="map_permission_action">Set up</string>
     <string name="map_content_description">Map of Circle members</string>
-    <string name="map_marker_content_description">%1$s, last updated %2$s</string>
+    <string name="map_marker_content_description">%1$s, last seen %2$s</string>
     <string name="map_member_details">Open member details</string>
     <string name="map_center_on_me">Center on my location</string>
     <string name="map_center_on_member">Center on %1$s</string>
     <string name="map_member_not_sharing">Not sharing location</string>
+    <string name="map_directions">Directions</string>
+
+    <string name="history_open">Open history</string>
+    <string name="history_title">History</string>
+    <string name="history_map_content_description">Map of location history</string>
+    <string name="history_end_marker">Latest position for %1$s</string>
+    <string name="history_range_1h">1 h</string>
+    <string name="history_range_6h">6 h</string>
+    <string name="history_range_24h">24 h</string>
+    <string name="history_empty_title">No history yet</string>
+    <string name="history_empty_body">History appears while sharing and Save history are on.</string>
+    <string name="history_timeline_title">Timeline</string>
+    <string name="history_timeline_empty">No points in this range.</string>
+    <string name="history_latest">Latest</string>
+    <string name="history_start">Start</string>
 
     <string name="permission_title">Turn on live location</string>
     <string name="permission_body">Around shares your location with your Circles only while you choose. A persistent notification is always shown.</string>
@@ -192,5 +210,10 @@
     <plurals name="circles_member_count">
         <item quantity="one">%1$d member</item>
         <item quantity="other">%1$d members</item>
+    </plurals>
+
+    <plurals name="history_point_count">
+        <item quantity="one">%1$d point</item>
+        <item quantity="other">%1$d points</item>
     </plurals>
 </resources>

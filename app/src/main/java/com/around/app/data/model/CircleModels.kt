@@ -63,6 +63,7 @@ data class CircleMember(
     val joinedAt: Long,
     val sharing: Boolean,
     val allowRing: Boolean,
+    val historyEnabled: Boolean = true,
 )
 
 data class CreatedCircle(

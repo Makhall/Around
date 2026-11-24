@@ -27,4 +27,7 @@ data class CircleDetailRoute(val circleId: String)
 data class CircleMapRoute(val circleId: String)
 
 @Serializable
+data class HistoryRoute(val circleId: String)
+
+@Serializable
 data object PermissionRoute

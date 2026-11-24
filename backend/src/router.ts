@@ -7,7 +7,8 @@ import {
   removeMember,
   rotateInviteCode,
 } from "./circles";
-import { handleJson, sendJson } from "./http";
+import { pruneHistory } from "./history";
+import { handleCron, handleJson, sendJson } from "./http";
 
 export async function handleRequest(
   request: IncomingMessage,
@@ -30,6 +31,8 @@ export async function handleRequest(
       return handleJson(request, response, leaveCircle);
     case "/api/removeMember":
       return handleJson(request, response, removeMember);
+    case "/api/cron/pruneHistory":
+      return handleCron(request, response, () => pruneHistory());
     default:
       sendJson(response, 404, {
         error: { code: "not_found", message: "Unknown endpoint" },

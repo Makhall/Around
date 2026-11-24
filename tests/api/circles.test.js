@@ -10,6 +10,7 @@ process.env.FIREBASE_DATABASE_URL =
 process.env.FIRESTORE_EMULATOR_HOST ??= "127.0.0.1:8080";
 process.env.FIREBASE_AUTH_EMULATOR_HOST ??= "127.0.0.1:9099";
 process.env.FIREBASE_DATABASE_EMULATOR_HOST ??= "127.0.0.1:9000";
+process.env.CRON_SECRET = "test-cron-secret";
 
 const { startServer, stopServer } = require("../../backend/dist/dev-server");
 
@@ -34,6 +35,7 @@ const {
   get,
   getDatabase,
   ref,
+  set,
 } = require("firebase/database");
 
 const apps = [];
@@ -282,6 +284,49 @@ test("creating a Circle without a profile is rejected", async () => {
     callApi(carol, "createCircle", { name: "No Profile" }),
     "profile_missing",
   );
+});
+
+test("pruneHistory removes expired points and keeps recent points", async () => {
+  const alice = await createUser("Alice");
+  const created = await createCircle(alice, "History Test");
+  const now = Date.now();
+  const base = `history/${created.circleId}/${alice.uid}`;
+
+  await set(ref(alice.database, `${base}/old`), {
+    lat: 1,
+    lng: 2,
+    t: now - 25 * 60 * 60 * 1000,
+    acc: 5,
+  });
+  await set(ref(alice.database, `${base}/fresh`), {
+    lat: 1.001,
+    lng: 2.001,
+    t: now,
+    acc: 5,
+  });
+
+  const response = await fetch(`${BASE_URL}/api/cron/pruneHistory`, {
+    headers: { authorization: "Bearer test-cron-secret" },
+  });
+  assert.equal(response.status, 200);
+  const payload = await response.json();
+  assert.equal(payload.ok, true);
+  assert.ok(payload.pointsRemoved >= 1);
+
+  const oldPoint = await get(ref(alice.database, `${base}/old`));
+  const freshPoint = await get(ref(alice.database, `${base}/fresh`));
+  assert.equal(oldPoint.exists(), false);
+  assert.equal(freshPoint.exists(), true);
+});
+
+test("pruneHistory rejects missing or incorrect secrets", async () => {
+  const missing = await fetch(`${BASE_URL}/api/cron/pruneHistory`);
+  assert.equal(missing.status, 401);
+
+  const wrong = await fetch(`${BASE_URL}/api/cron/pruneHistory`, {
+    headers: { authorization: "Bearer wrong-secret" },
+  });
+  assert.equal(wrong.status, 401);
 });
 
 test("repeated invalid join attempts are rate limited", async () => {

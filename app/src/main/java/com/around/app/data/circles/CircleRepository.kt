@@ -25,4 +25,10 @@ interface CircleRepository {
     suspend fun removeMember(circleId: String, targetUid: String): Result<Unit>
 
     suspend fun setSharing(circleId: String, uid: String, sharing: Boolean): Result<Unit>
+
+    suspend fun setHistoryEnabled(
+        circleId: String,
+        uid: String,
+        enabled: Boolean,
+    ): Result<Unit>
 }

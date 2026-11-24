@@ -15,6 +15,7 @@ data class CircleDetailUiState(
     val leaving: Boolean = false,
     val removingUid: String? = null,
     val sharingUpdating: Boolean = false,
+    val historyUpdating: Boolean = false,
     val sharingAllowed: Boolean = true,
     val error: CircleError? = null,
     val removedFromCircle: Boolean = false,

@@ -42,6 +42,7 @@ Use the Vercel dashboard → Project → Settings → Environment Variables, or 
 | `FIREBASE_PROJECT_ID` | `around-847b3` |
 | `FIREBASE_DATABASE_URL` | `https://around-847b3-default-rtdb.asia-southeast1.firebasedatabase.app` |
 | `FIREBASE_SERVICE_ACCOUNT_BASE64` | Base64 of the App Engine default service-account key |
+| `CRON_SECRET` | A long random value; Vercel sends it to the daily history-pruning cron |
 
 Generate the base64 value locally without putting the key in shell history if possible:
 
@@ -57,11 +58,14 @@ Then:
 vercel env add FIREBASE_PROJECT_ID production
 vercel env add FIREBASE_DATABASE_URL production
 vercel env add FIREBASE_SERVICE_ACCOUNT_BASE64 production
+vercel env add CRON_SECRET production
 ```
 
 Paste the clipboard value when prompted. Never commit the JSON key or the env values.
 
 Do **not** set `FIRESTORE_EMULATOR_HOST`, `FIREBASE_AUTH_EMULATOR_HOST`, or `FIREBASE_DATABASE_EMULATOR_HOST` in Vercel.
+
+`backend/vercel.json` schedules `GET /api/cron/pruneHistory` daily at 03:00 UTC. Vercel Hobby permits daily cron jobs; the endpoint refuses to run without the `CRON_SECRET` bearer token.
 
 ## 3. Deploy
 
