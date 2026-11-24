@@ -2,6 +2,21 @@
 
 The API lives in `backend/` and runs as one catch-all Vercel function at `/api/*`. It uses the Firebase Admin SDK against the `around-847b3` project.
 
+## Current deployment
+
+| Item | Value |
+|---|---|
+| Vercel project | `akha1/around-api` |
+| Production URL | `https://around-api-topaz.vercel.app` |
+| Health | `https://around-api-topaz.vercel.app/api/health` |
+| Runtime | Node 24 (Vercel), Firebase Admin SDK 13.6 |
+| Region | `sin1` |
+| Firestore database | `asia-southeast2` (Jakarta) |
+| Service account | App Engine default (`around-847b3@appspot.gserviceaccount.com`), stored as `FIREBASE_SERVICE_ACCOUNT_BASE64` |
+| Firestore/RTDB rules | Deployed |
+
+Node 24 plus `firebase-admin` 13.6 is used because `firebase-admin` 14 pulls an ESM-only `jose` that Vercel's CommonJS function loader cannot require.
+
 ## 1. Install and link
 
 ```powershell
@@ -26,13 +41,13 @@ Use the Vercel dashboard → Project → Settings → Environment Variables, or 
 |---|---|
 | `FIREBASE_PROJECT_ID` | `around-847b3` |
 | `FIREBASE_DATABASE_URL` | `https://around-847b3-default-rtdb.asia-southeast1.firebasedatabase.app` |
-| `FIREBASE_SERVICE_ACCOUNT_BASE64` | Base64 of the Firebase Admin SDK key |
+| `FIREBASE_SERVICE_ACCOUNT_BASE64` | Base64 of the App Engine default service-account key |
 
 Generate the base64 value locally without putting the key in shell history if possible:
 
 ```powershell
 [Convert]::ToBase64String(
-  [IO.File]::ReadAllBytes("C:\Users\axioo\.around-secrets\around-847b3-firebase-adminsdk-fbsvc-635bcb8a68.json")
+  [IO.File]::ReadAllBytes("C:\Users\axioo\.around-secrets\around-847b3-appspot-key.json")
 ) | Set-Clipboard
 ```
 

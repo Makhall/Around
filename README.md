@@ -2,7 +2,7 @@
 
 Private, consent-based location sharing for small trusted groups. Android-only, built with Kotlin, Jetpack Compose, Firebase Spark, a free Vercel Hobby relay, and MapLibre/OpenStreetMap.
 
-**Status: Phase 1 — Identity and Circles (verified on an Android 16 emulator; API deployed to Vercel).** Firestore is enabled in `asia-southeast2` and rules are deployed. Production create/join is waiting on a one-time IAM role grant for the Vercel service account.
+**Status: Phase 1 — Identity and Circles (production verified).** Anonymous sign-in, profiles, Circles, invite codes, member lists, and access revocation are in place. The free Vercel API is live, Firestore is in Jakarta (`asia-southeast2`), and a production create/cleanup smoke test passed.
 
 The full product plan lives in [PROJECT_PLAN.md](PROJECT_PLAN.md). Architecture decision for the free backend: [ADR 0002](docs/decisions/0002-vercel-relay.md). Verification notes: [Phase 0](docs/PHASE_0.md) and [Phase 1](docs/PHASE_1.md). Deployment: [Vercel API](docs/VERCEL.md).
 
@@ -111,12 +111,11 @@ The service-account key is stored only in Vercel environment variables. Never co
 
 ### Remaining manual setup
 
-1. **Vercel API** — deployed at `https://around-api-topaz.vercel.app`; `/api/health` returns OK. Set the three production environment variables if they are ever rotated.
-2. **Firestore IAM** — the database exists in **`asia-southeast2`** (Jakarta, not Singapore), and Firestore/RTDB rules are deployed. Grant `firebase-adminsdk-fbsvc@around-847b3.iam.gserviceaccount.com` the **Cloud Datastore User** (`roles/datastore.user`) role, or **Editor** for future backend features. Production create/join is blocked until this is granted.
-3. **Anonymous Auth** — enabled and verified in Phase 0.
-4. **Remote Config** — deploy `firebase/remoteconfig.template.json` (`sharing_enabled`, `map_style_url`).
-5. **GitHub Actions** — CI compiles without the private config using `app/google-services.json.example`; set the `GOOGLE_SERVICES_JSON` secret for a real build.
-6. **GitHub Projects board** with milestones M0–M6 (manual, per plan section 9).
+1. **Vercel API** — live at `https://around-api-topaz.vercel.app`; `/api/health` returns OK. Production environment variables are set in project `akha1/around-api`.
+2. **Firestore** — database exists in **`asia-southeast2`** (Jakarta) with Firestore and RTDB rules deployed. The production create/cleanup smoke test passed.
+3. **Remote Config** — deploy `firebase/remoteconfig.template.json` (`sharing_enabled`, `map_style_url`).
+4. **GitHub Actions** — CI compiles without the private config using `app/google-services.json.example`; set the `GOOGLE_SERVICES_JSON` secret for a real build.
+5. **GitHub Projects board** with milestones M0–M6 (manual, per plan section 9).
 
 ## Verification screenshots
 
@@ -148,8 +147,8 @@ Headless:
 ## Secrets
 
 - `app/google-services.json` is gitignored and must not be committed to this public repo. Use `app/google-services.json.example` as the template.
-- The Firebase Admin SDK key is outside the repository at `C:\Users\axioo\.around-secrets\around-847b3-firebase-adminsdk-fbsvc-635bcb8a68.json`.
-- In production, the key exists only as the base64 `FIREBASE_SERVICE_ACCOUNT_BASE64` Vercel environment variable.
+- The Vercel backend uses the project's App Engine default service-account key at `C:\Users\axioo\.around-secrets\around-847b3-appspot-key.json`. It is stored in Vercel as the `FIREBASE_SERVICE_ACCOUNT_BASE64` secret.
+- The original `firebase-adminsdk-fbsvc` key remains at `C:\Users\axioo\.around-secrets\around-847b3-firebase-adminsdk-fbsvc-635bcb8a68.json`; it has no project IAM roles and is not used by the backend.
 - Keystores, `.env` files, and service-account JSON files are gitignored.
 
 ## Version baseline
@@ -171,7 +170,7 @@ Headless:
 | Phase | Status |
 |---|---|
 | M0 / Phase 0 — Foundations | **Done and verified** |
-| M1 / Phase 1 — Identity and Circles | **Done on emulator; API deployed; Firestore IAM grant pending** |
+| M1 / Phase 1 — Identity and Circles | **Done and verified, including production create/cleanup** |
 | M2 / Phase 2 — Live sharing | Not started |
 | M3 / Phase 3 — History and last-known | Not started |
 | M4 / Phase 4 — Places and alerts | Not started |
