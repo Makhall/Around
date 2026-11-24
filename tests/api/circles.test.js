@@ -29,6 +29,12 @@ const {
   serverTimestamp,
   setDoc,
 } = require("firebase/firestore");
+const {
+  connectDatabaseEmulator,
+  get,
+  getDatabase,
+  ref,
+} = require("firebase/database");
 
 const apps = [];
 let server;
@@ -46,7 +52,12 @@ after(async () => {
 
 async function createUser(name, avatar) {
   const app = initializeApp(
-    { apiKey: "fake-api-key", projectId: PROJECT_ID },
+    {
+      apiKey: "fake-api-key",
+      projectId: PROJECT_ID,
+      databaseURL:
+        "https://around-847b3-default-rtdb.asia-southeast1.firebasedatabase.app",
+    },
     `around-test-${Date.now()}-${userCounter++}`,
   );
   apps.push(app);
@@ -60,6 +71,8 @@ async function createUser(name, avatar) {
 
   const db = getFirestore(app);
   connectFirestoreEmulator(db, "127.0.0.1", 8080);
+  const database = getDatabase(app);
+  connectDatabaseEmulator(database, "127.0.0.1", 9000);
 
   if (name) {
     await setDoc(doc(db, "users", uid), {
@@ -71,7 +84,7 @@ async function createUser(name, avatar) {
     });
   }
 
-  return { app, auth, db, uid, user: credential.user };
+  return { app, auth, db, database, uid, user: credential.user };
 }
 
 async function callApi(user, path, body) {
@@ -150,6 +163,11 @@ test("createCircle creates an owned Circle with an invite code", async () => {
   assert.equal(members.size, 1);
   assert.equal(members.docs[0].id, alice.uid);
   assert.equal(members.docs[0].data().role, "owner");
+
+  const mirror = await get(
+    ref(alice.database, `circleMembers/${created.circleId}/${alice.uid}`),
+  );
+  assert.equal(mirror.val()?.role, "owner");
 });
 
 test("a second user can join by code and see both members", async () => {

@@ -17,6 +17,7 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.tasks.await
 
 @Singleton
 class FirebaseCircleRepository @Inject constructor(
@@ -105,6 +106,19 @@ class FirebaseCircleRepository @Inject constructor(
 
     override suspend fun removeMember(circleId: String, targetUid: String): Result<Unit> =
         api.removeMember(circleId, targetUid)
+
+    override suspend fun setSharing(
+        circleId: String,
+        uid: String,
+        sharing: Boolean,
+    ): Result<Unit> = runCatching {
+        firestore.collection("circles")
+            .document(circleId)
+            .collection("members")
+            .document(uid)
+            .update("sharing", sharing)
+            .await()
+    }
 
     private fun DocumentSnapshot.toCircle(): Circle? {
         if (!exists()) {

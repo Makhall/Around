@@ -1,6 +1,8 @@
 package com.around.app.core.firebase
 
+import com.around.app.BuildConfig
+
 object BackendConfig {
-    /** The host machine as seen from the standard Android emulator. */
-    const val EMULATOR_HOST = "10.0.2.2"
+    /** Host for the Firebase emulators. Override with -ParoundEmulatorHost. */
+    val EMULATOR_HOST: String = BuildConfig.EMULATOR_HOST
 }

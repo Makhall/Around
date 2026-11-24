@@ -16,6 +16,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
+import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
+import androidx.compose.material.icons.outlined.Map
 import androidx.compose.material.icons.outlined.PersonRemove
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -32,6 +34,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
@@ -44,6 +47,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -52,20 +56,29 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.around.app.R
 import com.around.app.core.designsystem.components.AvatarBadge
 import com.around.app.core.designsystem.components.InviteCodeCard
+import com.around.app.core.permissions.rememberPermissionState
 import com.around.app.core.ui.userMessage
 import com.around.app.data.model.CircleMember
 import com.around.app.data.model.MemberRole
+import com.around.app.service.SharingRuntime
+import com.around.app.service.SharingServiceCommands
+import com.around.app.service.SharingStatus
 import kotlinx.coroutines.launch
 
 @Composable
 fun CircleDetailScreen(
     onBack: () -> Unit,
     onLeft: () -> Unit,
+    onOpenMap: (String) -> Unit,
+    onOpenPermissions: () -> Unit,
     viewModel: CircleDetailViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val sharingStatus by SharingRuntime.status.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
+    val context = LocalContext.current
+    val permissions = rememberPermissionState()
     val copiedMessage = stringResource(R.string.invite_code_copied)
     var pendingRemove by remember { mutableStateOf<CircleMember?>(null) }
     var showLeaveDialog by remember { mutableStateOf(false) }
@@ -80,6 +93,8 @@ fun CircleDetailScreen(
 
     val circle = uiState.circle
     val isOwner = circle != null && circle.ownerUid == uiState.currentUid
+    val currentMember = uiState.members.firstOrNull { it.uid == uiState.currentUid }
+    val sharing = currentMember?.sharing == true
 
     Scaffold(
         topBar = {
@@ -172,6 +187,141 @@ fun CircleDetailScreen(
                 Spacer(Modifier.height(16.dp))
             }
 
+            ElevatedCard(
+                onClick = { onOpenMap(circle.id) },
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Row(
+                    modifier = Modifier.padding(18.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Surface(
+                        shape = CircleShape,
+                        color = MaterialTheme.colorScheme.primaryContainer,
+                        contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                    ) {
+                        Icon(
+                            imageVector = Icons.Outlined.Map,
+                            contentDescription = null,
+                            modifier = Modifier.padding(10.dp),
+                        )
+                    }
+                    Spacer(Modifier.width(14.dp))
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = stringResource(R.string.circle_detail_map),
+                            style = MaterialTheme.typography.titleMedium,
+                        )
+                        Text(
+                            text = stringResource(R.string.circle_detail_map_body),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowRight,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+            }
+
+            Spacer(Modifier.height(16.dp))
+
+            ElevatedCard(modifier = Modifier.fillMaxWidth()) {
+                Column(modifier = Modifier.padding(18.dp)) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = stringResource(R.string.circle_detail_sharing_title),
+                                style = MaterialTheme.typography.titleMedium,
+                            )
+                            Text(
+                                text = if (!uiState.sharingAllowed) {
+                                    stringResource(R.string.map_sharing_disabled)
+                                } else {
+                                    stringResource(R.string.circle_detail_sharing_body)
+                                },
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        }
+                        Spacer(Modifier.width(12.dp))
+                        Switch(
+                            checked = sharing,
+                            onCheckedChange = { checked ->
+                                when {
+                                    !uiState.sharingAllowed -> Unit
+                                    checked && (
+                                        !permissions.status.hasLocation ||
+                                            !permissions.status.notifications
+                                        ) -> onOpenPermissions()
+
+                                    else -> {
+                                        viewModel.setSharing(checked)
+                                        if (checked) {
+                                            SharingServiceCommands.start(context)
+                                        }
+                                    }
+                                }
+                            },
+                            enabled = uiState.sharingAllowed && !uiState.sharingUpdating,
+                        )
+                    }
+
+                    if (sharing && permissions.status.hasLocation &&
+                        !permissions.status.notifications
+                    ) {
+                        Spacer(Modifier.height(10.dp))
+                        SharingWarning(
+                            text = stringResource(R.string.permission_notifications_body),
+                            onOpenPermissions = onOpenPermissions,
+                        )
+                    }
+
+                    if (sharing && permissions.status.hasLocation &&
+                        !permissions.status.backgroundLocation
+                    ) {
+                        Spacer(Modifier.height(10.dp))
+                        SharingWarning(
+                            text = stringResource(
+                                R.string.map_permission_background_warning,
+                            ),
+                            onOpenPermissions = onOpenPermissions,
+                        )
+                    }
+
+                    if (sharing) {
+                        Spacer(Modifier.height(10.dp))
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            if (sharingStatus is SharingStatus.Stopped &&
+                                permissions.status.hasLocation &&
+                                permissions.status.notifications
+                            ) {
+                                TextButton(
+                                    onClick = { SharingServiceCommands.start(context) },
+                                    contentPadding = androidx.compose.foundation.layout.PaddingValues(
+                                        horizontal = 0.dp,
+                                    ),
+                                ) {
+                                    Text(stringResource(R.string.map_start_sharing))
+                                }
+                            }
+                            Spacer(Modifier.weight(1f))
+                            TextButton(
+                                onClick = { onOpenMap(circle.id) },
+                                contentPadding = androidx.compose.foundation.layout.PaddingValues(
+                                    horizontal = 0.dp,
+                                ),
+                            ) {
+                                Text(stringResource(R.string.circle_detail_open_map))
+                            }
+                        }
+                    }
+                }
+            }
+
+            Spacer(Modifier.height(24.dp))
             Text(
                 text = stringResource(
                     R.string.circle_detail_members_count,
@@ -359,6 +509,32 @@ fun CircleDetailScreen(
                 }
             },
         )
+    }
+}
+
+@Composable
+private fun SharingWarning(
+    text: String,
+    onOpenPermissions: () -> Unit,
+) {
+    Surface(
+        shape = RoundedCornerShape(10.dp),
+        color = MaterialTheme.colorScheme.tertiaryContainer,
+        contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
+    ) {
+        Row(
+            modifier = Modifier.padding(start = 12.dp, end = 4.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                text = text,
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.weight(1f),
+            )
+            TextButton(onClick = onOpenPermissions) {
+                Text(stringResource(R.string.map_permission_action))
+            }
+        }
     }
 }
 

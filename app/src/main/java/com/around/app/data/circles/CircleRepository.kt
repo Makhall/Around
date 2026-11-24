@@ -23,4 +23,6 @@ interface CircleRepository {
     suspend fun leaveCircle(circleId: String): Result<Unit>
 
     suspend fun removeMember(circleId: String, targetUid: String): Result<Unit>
+
+    suspend fun setSharing(circleId: String, uid: String, sharing: Boolean): Result<Unit>
 }

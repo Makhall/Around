@@ -11,6 +11,9 @@ val useFirebaseEmulators = providers.gradleProperty("useFirebaseEmulators")
     .getOrElse("false")
     .toBoolean()
 
+val emulatorHost = providers.gradleProperty("aroundEmulatorHost")
+    .getOrElse("10.0.2.2")
+
 val apiBaseUrl = providers.gradleProperty("aroundApiBaseUrl").getOrElse(
     if (useFirebaseEmulators) {
         "http://10.0.2.2:3000"
@@ -49,6 +52,7 @@ android {
             useFirebaseEmulators.toString(),
         )
         buildConfigField("String", "API_BASE_URL", "\"$apiBaseUrl\"")
+        buildConfigField("String", "EMULATOR_HOST", "\"$emulatorHost\"")
     }
 
     buildTypes {
@@ -82,6 +86,11 @@ android {
             isReturnDefaultValues = true
         }
     }
+
+    lint {
+        // The app deliberately uses android.util.Log; Timber is only a transitive SDK dependency.
+        disable += "LogNotTimber"
+    }
 }
 
 dependencies {
@@ -108,10 +117,13 @@ dependencies {
     implementation(libs.firebase.auth)
     implementation(libs.firebase.database)
     implementation(libs.firebase.firestore)
+    implementation(libs.firebase.config)
 
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.kotlinx.coroutines.play.services)
     implementation(libs.okhttp)
+    implementation(libs.maplibre)
+    implementation(libs.play.services.location)
 
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)

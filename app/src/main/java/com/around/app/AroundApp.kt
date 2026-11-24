@@ -7,12 +7,14 @@ import com.google.firebase.auth.auth
 import com.google.firebase.database.database
 import com.google.firebase.firestore.firestore
 import dagger.hilt.android.HiltAndroidApp
+import org.maplibre.android.MapLibre
 
 @HiltAndroidApp
 class AroundApp : Application() {
 
     override fun onCreate() {
         super.onCreate()
+        MapLibre.getInstance(this)
 
         if (BuildConfig.USE_FIREBASE_EMULATORS) {
             Firebase.auth.useEmulator(BackendConfig.EMULATOR_HOST, 9099)

@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.CircularProgressIndicator
@@ -24,6 +25,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -42,6 +44,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.around.app.R
 import com.around.app.core.designsystem.components.AroundBrandMark
 import com.around.app.core.designsystem.components.AvatarBadge
+import com.around.app.core.permissions.rememberPermissionState
 import com.around.app.data.model.Circle
 
 @Composable
@@ -50,9 +53,11 @@ fun CirclesScreen(
     onJoinCircle: () -> Unit,
     onOpenCircle: (Circle) -> Unit,
     onEditProfile: () -> Unit,
+    onOpenPermissions: () -> Unit,
     viewModel: CirclesViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val permissions = rememberPermissionState()
     val editProfileDescription = stringResource(R.string.edit_profile_content_description)
 
     Scaffold(
@@ -158,6 +163,12 @@ fun CirclesScreen(
                                 Text(stringResource(R.string.circles_join))
                             }
                         }
+                        if (!permissions.status.hasLocation ||
+                            !permissions.status.notifications
+                        ) {
+                            Spacer(Modifier.height(10.dp))
+                            PermissionSetupCard(onOpenPermissions = onOpenPermissions)
+                        }
                         Spacer(Modifier.height(12.dp))
                         LazyColumn(
                             modifier = Modifier.fillMaxSize(),
@@ -176,6 +187,35 @@ fun CirclesScreen(
                         }
                     }
                 }
+            }
+        }
+    }
+}
+
+@Composable
+private fun PermissionSetupCard(onOpenPermissions: () -> Unit) {
+    Surface(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(16.dp),
+        color = MaterialTheme.colorScheme.tertiaryContainer,
+        contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
+    ) {
+        Row(
+            modifier = Modifier.padding(start = 16.dp, end = 8.dp, top = 10.dp, bottom = 10.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = stringResource(R.string.circles_permission_title),
+                    style = MaterialTheme.typography.titleSmall,
+                )
+                Text(
+                    text = stringResource(R.string.circles_permission_body),
+                    style = MaterialTheme.typography.bodySmall,
+                )
+            }
+            TextButton(onClick = onOpenPermissions) {
+                Text(stringResource(R.string.circles_permission_action))
             }
         }
     }

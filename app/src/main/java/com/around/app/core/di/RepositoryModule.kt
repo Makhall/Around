@@ -4,6 +4,10 @@ import com.around.app.data.auth.AuthRepository
 import com.around.app.data.auth.FirebaseAuthRepository
 import com.around.app.data.circles.CircleRepository
 import com.around.app.data.circles.FirebaseCircleRepository
+import com.around.app.data.config.AppConfigRepository
+import com.around.app.data.config.FirebaseRemoteConfigRepository
+import com.around.app.data.location.LocationRepository
+import com.around.app.data.location.RealtimeLocationRepository
 import com.around.app.data.user.FirebaseUserRepository
 import com.around.app.data.user.UserRepository
 import dagger.Binds
@@ -27,4 +31,14 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindCircleRepository(impl: FirebaseCircleRepository): CircleRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindLocationRepository(impl: RealtimeLocationRepository): LocationRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindAppConfigRepository(
+        impl: FirebaseRemoteConfigRepository,
+    ): AppConfigRepository
 }

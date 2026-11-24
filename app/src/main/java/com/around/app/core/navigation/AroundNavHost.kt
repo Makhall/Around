@@ -9,6 +9,8 @@ import com.around.app.feature.circles.CircleDetailScreen
 import com.around.app.feature.circles.CirclesScreen
 import com.around.app.feature.circles.CreateCircleScreen
 import com.around.app.feature.circles.JoinCircleScreen
+import com.around.app.feature.map.CircleMapScreen
+import com.around.app.feature.permissions.PermissionScreen
 import com.around.app.feature.profile.ProfileScreen
 import com.around.app.feature.session.SessionScreen
 
@@ -62,6 +64,7 @@ fun AroundNavHost(
                     navController.navigate(CircleDetailRoute(circle.id))
                 },
                 onEditProfile = { navController.navigate(ProfileEditRoute) },
+                onOpenPermissions = { navController.navigate(PermissionRoute) },
             )
         }
 
@@ -92,6 +95,30 @@ fun AroundNavHost(
                 onBack = { navController.popBackStack() },
                 onLeft = {
                     navController.popBackStack(CirclesRoute, inclusive = false)
+                },
+                onOpenMap = { circleId ->
+                    navController.navigate(CircleMapRoute(circleId))
+                },
+                onOpenPermissions = {
+                    navController.navigate(PermissionRoute)
+                },
+            )
+        }
+
+        composable<CircleMapRoute> {
+            CircleMapScreen(
+                onBack = { navController.popBackStack() },
+                onOpenPermissions = {
+                    navController.navigate(PermissionRoute)
+                },
+            )
+        }
+
+        composable<PermissionRoute> {
+            PermissionScreen(
+                onBack = { navController.popBackStack() },
+                onDone = {
+                    navController.popBackStack()
                 },
             )
         }

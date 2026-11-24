@@ -97,6 +97,98 @@
 
     <string name="action_back">Kembali</string>
 
+    <string name="circle_detail_map">Peta</string>
+    <string name="circle_detail_map_body">Lihat lokasi terbaru semua anggota di peta langsung.</string>
+    <string name="circle_detail_open_map">Buka peta langsung</string>
+    <string name="circle_detail_sharing_title">Berbagi lokasi</string>
+    <string name="circle_detail_sharing_body">Bagikan lokasiku di Circle ini saat berbagi aktif.</string>
+
+    <string name="sharing_notification_channel_name">Status berbagi</string>
+    <string name="sharing_notification_channel_description">Tampil saat Around membagikan lokasimu.</string>
+    <string name="sharing_notification_title">Membagikan lokasimu</string>
+    <string name="sharing_notification_preparing">Berbagi lokasi sedang dimulai…</string>
+    <string name="sharing_notification_no_circles">Tidak ada Circle yang mengaktifkan berbagi lokasi.</string>
+    <string name="sharing_notification_paused_title">Berbagi lokasi dijeda</string>
+    <string name="sharing_notification_paused_until">Dijeda sampai %1$s</string>
+    <string name="sharing_notification_paused_indefinitely">Dijeda sampai kamu melanjutkan</string>
+    <string name="sharing_notification_action_pause">Jeda 1 jam</string>
+    <string name="sharing_notification_action_resume">Lanjutkan</string>
+    <string name="sharing_notification_action_stop">Hentikan</string>
+
+    <plurals name="sharing_notification_text">
+        <item quantity="other">Berbagi dengan %1$d Circle</item>
+    </plurals>
+
+    <string name="map_attribution">© kontributor OpenStreetMap</string>
+    <string name="map_sharing_on">Membagikan lokasi</string>
+    <string name="map_sharing_off">Berbagi nonaktif</string>
+    <string name="map_start_sharing">Mulai berbagi</string>
+    <string name="map_stop_sharing">Hentikan berbagi</string>
+    <string name="map_share_this_circle">Bagikan di Circle ini</string>
+    <string name="map_sharing_disabled">Berbagi lokasi dinonaktifkan oleh konfigurasi aplikasi.</string>
+
+    <string name="map_pause">Jeda</string>
+    <string name="map_pause_1h">Jeda 1 jam</string>
+    <string name="map_pause_8h">Jeda 8 jam</string>
+    <string name="map_pause_indefinitely">Jeda sampai aku lanjutkan</string>
+    <string name="map_resume">Lanjutkan berbagi</string>
+    <string name="map_paused_until">Dijeda sampai %1$s</string>
+    <string name="map_paused_indefinitely">Dijeda sampai kamu melanjutkan</string>
+    <string name="map_no_location">Belum ada lokasi</string>
+    <string name="map_waiting_location">Menunggu lokasi</string>
+    <string name="map_battery">Baterai %1$d%%</string>
+    <string name="map_charging">Mengisi daya</string>
+    <string name="map_accuracy">±%1$d m</string>
+    <string name="map_last_updated">Terakhir diperbarui %1$s</string>
+    <string name="map_just_now">baru saja</string>
+    <string name="map_seconds_ago">%1$d dtk lalu</string>
+    <string name="map_minutes_ago">%1$d mnt lalu</string>
+    <string name="map_hours_ago">%1$d jam lalu</string>
+    <string name="map_days_ago">%1$d hari lalu</string>
+    <string name="map_stale">Usang · terakhir terlihat %1$s</string>
+    <string name="map_stale_chip">Usang</string>
+    <string name="map_battery_title">Jaga berbagi tetap andal</string>
+    <string name="map_battery_body">Beberapa produsen ponsel menghentikan aplikasi latar belakang secara agresif. Izinkan Around berjalan di latar belakang dan nonaktifkan optimasi baterai untuknya.</string>
+    <string name="map_battery_settings">Buka pengaturan baterai</string>
+    <string name="map_battery_guidance">Panduan baterai</string>
+    <string name="map_close">Tutup</string>
+    <string name="map_error">Gagal memuat peta.</string>
+    <string name="map_retry">Coba lagi</string>
+    <string name="map_permission_background_warning">Lokasi latar belakang tidak diizinkan. Berbagi bisa berhenti saat layar mati atau setelah restart.</string>
+    <string name="map_permission_needed">Izinkan lokasi untuk berbagi dari ponsel ini.</string>
+    <string name="map_notifications_needed">Izinkan notifikasi agar kontrol berbagi tetap terlihat.</string>
+    <string name="map_permission_action">Atur</string>
+    <string name="map_content_description">Peta anggota Circle</string>
+    <string name="map_marker_content_description">%1$s, terakhir diperbarui %2$s</string>
+    <string name="map_member_details">Buka detail anggota</string>
+    <string name="map_center_on_me">Pusatkan ke lokasiku</string>
+    <string name="map_center_on_member">Pusatkan ke %1$s</string>
+    <string name="map_member_not_sharing">Tidak membagikan lokasi</string>
+
+    <string name="permission_title">Aktifkan lokasi langsung</string>
+    <string name="permission_body">Around membagikan lokasimu ke Circle hanya saat kamu memilih. Notifikasi tetap selalu ditampilkan.</string>
+    <string name="permission_location_title">Lokasi presisi</string>
+    <string name="permission_location_body">Diperlukan untuk menempatkanmu di peta. Lokasi perkiraan bisa dipakai tetapi kurang akurat.</string>
+    <string name="permission_notifications_title">Notifikasi</string>
+    <string name="permission_notifications_body">Notifikasi berjalan memungkinkanmu menjeda atau menghentikan berbagi kapan saja.</string>
+    <string name="permission_background_title">Izinkan sepanjang waktu</string>
+    <string name="permission_background_body">Android memerlukannya agar berbagi tetap berjalan saat layar mati atau setelah restart. Jika dilewati, berbagi bisa berhenti di latar belakang.</string>
+    <string name="permission_allow">Izinkan lokasi dan notifikasi</string>
+    <string name="permission_open_settings">Buka pengaturan aplikasi</string>
+    <string name="permission_continue">Selesai</string>
+    <string name="permission_status_granted">Diizinkan</string>
+    <string name="permission_status_missing">Belum diizinkan</string>
+    <string name="permission_allow_notifications">Izinkan notifikasi</string>
+    <string name="permission_allow_background">Izinkan sepanjang waktu</string>
+    <string name="permission_background_hint">Pilih Izinkan sepanjang waktu di dialog lokasi.</string>
+    <string name="permission_background_settings_hint">Di Android 11 ke atas, buka Pengaturan aplikasi → Izin → Lokasi lalu pilih Izinkan sepanjang waktu.</string>
+    <string name="permission_location_services_off">Layanan lokasi nonaktif. Aktifkan di pengaturan sistem agar Around bisa menemukanmu.</string>
+    <string name="permission_privacy_note">Around tidak pernah menyembunyikan notifikasi berbagi. Kamu bisa menjeda atau menghentikan berbagi kapan saja.</string>
+
+    <string name="circles_permission_title">Siapkan lokasi langsung</string>
+    <string name="circles_permission_body">Izinkan lokasi dan notifikasi sebelum berbagi dengan Circle.</string>
+    <string name="circles_permission_action">Atur</string>
+
     <plurals name="circles_member_count">
         <item quantity="other">%1$d anggota</item>
     </plurals>

@@ -22,3 +22,9 @@ data object JoinCircleRoute
 
 @Serializable
 data class CircleDetailRoute(val circleId: String)
+
+@Serializable
+data class CircleMapRoute(val circleId: String)
+
+@Serializable
+data object PermissionRoute

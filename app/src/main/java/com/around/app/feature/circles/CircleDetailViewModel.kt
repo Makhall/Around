@@ -8,6 +8,8 @@ import androidx.navigation.toRoute
 import com.around.app.core.navigation.CircleDetailRoute
 import com.around.app.data.auth.AuthRepository
 import com.around.app.data.circles.CircleRepository
+import com.around.app.data.config.AppConfigRepository
+import com.around.app.data.location.LocationRepository
 import com.around.app.data.model.CircleError
 import com.around.app.data.model.toCircleError
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -26,6 +28,8 @@ class CircleDetailViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     authRepository: AuthRepository,
     private val circleRepository: CircleRepository,
+    private val locationRepository: LocationRepository,
+    private val configRepository: AppConfigRepository,
 ) : ViewModel() {
 
     private val circleId: String = savedStateHandle.toRoute<CircleDetailRoute>().circleId
@@ -40,6 +44,10 @@ class CircleDetailViewModel @Inject constructor(
 
     init {
         observeCircle()
+        viewModelScope.launch {
+            val settings = configRepository.load()
+            _uiState.update { it.copy(sharingAllowed = settings.sharingEnabled) }
+        }
     }
 
     fun retry() {
@@ -105,6 +113,33 @@ class CircleDetailViewModel @Inject constructor(
                 onFailure = { throwable ->
                     _uiState.update {
                         it.copy(leaving = false, error = throwable.toCircleError())
+                    }
+                },
+            )
+        }
+    }
+
+    fun setSharing(enabled: Boolean) {
+        val uid = currentUid ?: return
+        if (_uiState.value.sharingUpdating) {
+            return
+        }
+
+        viewModelScope.launch {
+            _uiState.update { it.copy(sharingUpdating = true, error = null) }
+            circleRepository.setSharing(circleId, uid, enabled).fold(
+                onSuccess = {
+                    if (!enabled) {
+                        locationRepository.clearLocations(setOf(circleId), uid)
+                    }
+                    _uiState.update { it.copy(sharingUpdating = false) }
+                },
+                onFailure = { throwable ->
+                    _uiState.update {
+                        it.copy(
+                            sharingUpdating = false,
+                            error = throwable.toCircleError(),
+                        )
                     }
                 },
             )

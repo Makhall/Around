@@ -97,6 +97,98 @@
 
     <string name="action_back">Back</string>
 
+    <string name="circle_detail_map">Map</string>
+    <string name="circle_detail_map_body">See everyone\'s latest location on a live map.</string>
+    <string name="circle_detail_open_map">Open live map</string>
+    <string name="circle_detail_sharing_title">Live sharing</string>
+    <string name="circle_detail_sharing_body">Share my location in this Circle while sharing is on.</string>
+
+    <string name="sharing_notification_channel_name">Sharing status</string>
+    <string name="sharing_notification_channel_description">Shown while Around is sharing your location.</string>
+    <string name="sharing_notification_title">Sharing your location</string>
+    <string name="sharing_notification_preparing">Location sharing is starting…</string>
+    <string name="sharing_notification_no_circles">No Circle has location sharing enabled.</string>
+    <string name="sharing_notification_paused_title">Location sharing paused</string>
+    <string name="sharing_notification_paused_until">Paused until %1$s</string>
+    <string name="sharing_notification_paused_indefinitely">Paused until you resume</string>
+    <string name="sharing_notification_action_pause">Pause 1 h</string>
+    <string name="sharing_notification_action_resume">Resume</string>
+    <string name="sharing_notification_action_stop">Stop</string>
+
+    <plurals name="sharing_notification_text">
+        <item quantity="one">Sharing with %1$d Circle</item>
+        <item quantity="other">Sharing with %1$d Circles</item>
+    </plurals>
+
+    <string name="map_attribution">© OpenStreetMap contributors</string>
+    <string name="map_sharing_on">Sharing location</string>
+    <string name="map_sharing_off">Sharing off</string>
+    <string name="map_start_sharing">Start sharing</string>
+    <string name="map_stop_sharing">Stop sharing</string>
+    <string name="map_share_this_circle">Share in this Circle</string>
+    <string name="map_sharing_disabled">Location sharing is disabled by the app configuration.</string>
+    <string name="map_pause">Pause</string>
+    <string name="map_pause_1h">Pause 1 hour</string>
+    <string name="map_pause_8h">Pause 8 hours</string>
+    <string name="map_pause_indefinitely">Pause until I resume</string>
+    <string name="map_resume">Resume sharing</string>
+    <string name="map_paused_until">Paused until %1$s</string>
+    <string name="map_paused_indefinitely">Paused until you resume</string>
+    <string name="map_no_location">No location yet</string>
+    <string name="map_waiting_location">Waiting for location</string>
+    <string name="map_battery">Battery %1$d%%</string>
+    <string name="map_charging">Charging</string>
+    <string name="map_accuracy">±%1$d m</string>
+    <string name="map_last_updated">Last updated %1$s</string>
+    <string name="map_just_now">just now</string>
+    <string name="map_seconds_ago">%1$d s ago</string>
+    <string name="map_minutes_ago">%1$d min ago</string>
+    <string name="map_hours_ago">%1$d h ago</string>
+    <string name="map_days_ago">%1$d d ago</string>
+    <string name="map_stale">Stale · last seen %1$s</string>
+    <string name="map_stale_chip">Stale</string>
+    <string name="map_battery_title">Keep sharing reliable</string>
+    <string name="map_battery_body">Some phone makers stop background apps aggressively. Allow Around to run in the background and disable battery optimization for it.</string>
+    <string name="map_battery_settings">Open battery settings</string>
+    <string name="map_battery_guidance">Battery guidance</string>
+    <string name="map_close">Close</string>
+    <string name="map_error">Couldn\'t load the map.</string>
+    <string name="map_retry">Retry</string>
+    <string name="map_permission_background_warning">Background location isn\'t allowed. Sharing may stop when the screen is off or after a restart.</string>
+    <string name="map_permission_needed">Allow location to share from this phone.</string>
+    <string name="map_notifications_needed">Allow notifications so the sharing controls stay visible.</string>
+    <string name="map_permission_action">Set up</string>
+    <string name="map_content_description">Map of Circle members</string>
+    <string name="map_marker_content_description">%1$s, last updated %2$s</string>
+    <string name="map_member_details">Open member details</string>
+    <string name="map_center_on_me">Center on my location</string>
+    <string name="map_center_on_member">Center on %1$s</string>
+    <string name="map_member_not_sharing">Not sharing location</string>
+
+    <string name="permission_title">Turn on live location</string>
+    <string name="permission_body">Around shares your location with your Circles only while you choose. A persistent notification is always shown.</string>
+    <string name="permission_location_title">Precise location</string>
+    <string name="permission_location_body">Needed to place you on the map. Approximate location works but is less accurate.</string>
+    <string name="permission_notifications_title">Notifications</string>
+    <string name="permission_notifications_body">The ongoing notification lets you pause or stop sharing at any time.</string>
+    <string name="permission_background_title">Allow all the time</string>
+    <string name="permission_background_body">Android needs this to keep sharing when the screen is off or after a restart. If you skip it, sharing may pause in the background.</string>
+    <string name="permission_allow">Allow location and notifications</string>
+    <string name="permission_open_settings">Open app settings</string>
+    <string name="permission_continue">Done</string>
+    <string name="permission_status_granted">Allowed</string>
+    <string name="permission_status_missing">Not allowed</string>
+    <string name="permission_allow_notifications">Allow notifications</string>
+    <string name="permission_allow_background">Allow all the time</string>
+    <string name="permission_background_hint">Choose Allow all the time in the location dialog.</string>
+    <string name="permission_background_settings_hint">On Android 11 and newer, open App settings → Permissions → Location and choose Allow all the time.</string>
+    <string name="permission_location_services_off">Location services are off. Turn them on in system settings so Around can find you.</string>
+    <string name="permission_privacy_note">Around never hides the sharing notification. You can pause or stop sharing at any time.</string>
+
+    <string name="circles_permission_title">Set up live location</string>
+    <string name="circles_permission_body">Allow location and notifications before sharing with a Circle.</string>
+    <string name="circles_permission_action">Set up</string>
+
     <plurals name="circles_member_count">
         <item quantity="one">%1$d member</item>
         <item quantity="other">%1$d members</item>

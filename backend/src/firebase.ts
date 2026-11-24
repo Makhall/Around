@@ -38,10 +38,17 @@ const projectId =
     : "around-847b3");
 
 const databaseEmulatorHost = process.env.FIREBASE_DATABASE_EMULATOR_HOST;
+const configuredDatabaseUrl = process.env.FIREBASE_DATABASE_URL;
+const databaseInstance =
+  process.env.FIREBASE_DATABASE_INSTANCE ??
+  configuredDatabaseUrl
+    ?.replace(/^https?:\/\//, "")
+    .split(".")[0] ??
+  `${projectId}-default-rtdb`;
 const databaseUrl = databaseEmulatorHost
-  ? `http://${databaseEmulatorHost}?ns=${projectId}`
-  : (process.env.FIREBASE_DATABASE_URL ??
-    `https://${projectId}-default-rtdb.asia-southeast1.firebasedatabase.app`);
+  ? `http://${databaseEmulatorHost}?ns=${databaseInstance}`
+  : (configuredDatabaseUrl ??
+    `https://${databaseInstance}.asia-southeast1.firebasedatabase.app`);
 
 if (getApps().length === 0) {
   if (emulatorMode) {
